@@ -1,0 +1,1942 @@
+@prefix : <https://uri.etsi.org/ngsi-ld/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix xml: <http://www.w3.org/XML/1998/namespace> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix geojson: <https://purl.org/geojson/vocab#> .
+@prefix smart: <https://smartdatamodels.org/> .
+@prefix fiware: <https://uri.fiware.org/ns/data-models#> .
+@prefix terms: <https://smart-data-models.github.io/data-models/terms.jsonld#/definitions/> .
+@prefix definitions: <https://smart-data-models.github.io/data-models/common-schema.json#/definitions/> .
+@prefix common: <https://smart-data-models.github.io/data-models/common-schema.json#/definitions/Location-Commons/properties/> .
+@prefix saref: <https://w3id.org/def/saref#> .
+@prefix saref4agri: <https://w3id.org/def/saref4agri#> .
+@prefix goodrelations: <http://purl.org/goodrelations/v1#> .
+@prefix purlterms: <http://purl.org/dc/terms/> .
+@prefix schema: <https://schema.org/> .
+@prefix ngsi-ld: <http://uri.etsi.org/ngsi-ld/> .
+@prefix default: <https://uri.etsi.org/ngsi-ld/default-context/> .
+@prefix building: <https://smartdatamodels.org/dataModel.Building/> .
+@prefix energy: <https://smartdatamodels.org/dataModel.Energy/> .
+@base <https://uri.etsi.org/ngsi-ld/> .
+
+<https://uri.etsi.org/ngsi-ld/> rdf:type owl:Ontology .
+
+#################################################################
+#    Datatypes
+#################################################################
+
+### https://smart-data-models.github.io/data-models/terms.jsonld#/definitions/email
+terms:email rdf:type rdfs:Datatype ;
+            owl:onDatatype xsd:string ;
+            rdfs:comment "idn-email. Property. Email address of owner" .
+
+### https://smart-data-models.github.io/data-models/common-schema.json#/definitions/userAlias
+definitions:userAlias rdf:type rdfs:Datatype ;
+                      owl:onDatatype xsd:string ;
+                      rdfs:comment "Property. An anonymous alias of a user" .
+
+### https://smart-data-models.github.io/data-models/terms.jsonld#/definitions/tag
+terms:tag rdf:type rdfs:Datatype ;
+          owl:onDatatype xsd:string ;
+          rdfs:comment "Property. Model:'https://schema.org/Text'. An optional text string used to qualify an item" .
+
+### https://smart-data-models.github.io/data-models/common-schema.json#/definitions/timeInstant
+definitions:timeInstant rdf:type rdfs:Datatype ;
+                        owl:onDatatype xsd:dateTime ;
+                        rdfs:comment "Property. Model:'https://schema.org/Datetime'. Timestamp of the payload . There can be production environments where the attribute type is equal to the `ISO8601` string. If so, it must be considered as a synonym of `DateTime`. This attribute is kept for backwards compatibility with old FIWARE reference implementations" .
+
+### https://smartdatamodels.org/dateObserved
+smart:dateObserved rdf:type rdfs:Datatype ;
+                   owl:onDatatype xsd:dateTime ;
+                   rdfs:comment "Property. Date of the observed entity defined by the user" .
+
+### https://smart-data-models.github.io/data-models/common-schema.json#/definitions/dateYearLess
+definitions:dateYearLess rdf:type rdfs:Datatype ;
+                         owl:onDatatype xsd:string ;
+                         owl:withRestrictions ( 
+                                                 [ xsd:pattern "^--((0[13578]|1[02])-31|(0[1,3-9]|1[0-2])-30|(0\d|1[0-2])-([0-2]\d))$" ]
+                                              ) .
+
+### https://uri.etsi.org/ngsi-ld/default-context/touristType
+default:touristType rdf:type rdfs:Datatype ;
+                    owl:onDatatype xsd:string ;
+                    rdfs:comment "Property. Model:'https://schema.org/Text'. Type of tourism depending on the segment and the motivation of the trip." .
+
+### https://uri.etsi.org/ngsi-ld/default-context/isAccessibleForFree
+default:isAccessibleForFree rdf:type rdfs:Datatype ;
+                            owl:onDatatype xsd:boolean ;
+                            rdfs:comment "Property. Model:'https://schema.org/isAccessibleForFree'. A flag to signal that the item, event, or place is accessible for free." .
+
+### https://uri.etsi.org/ngsi-ld/default-context/publicAccess
+default:publicAccess rdf:type rdfs:Datatype ;
+                     owl:onDatatype xsd:boolean ;
+                     rdfs:comment "Property. Model:'https://schema.org/publicAccess'. A flag to signal that the Place is open to public visitors. If this property is omitted there is no assumed default boolean value" .
+
+### https://uri.etsi.org/ngsi-ld/default-context/availableLanguage
+default:availableLanguage rdf:type rdfs:Datatype ;
+                          owl:onDatatype rdf:List ;
+                          rdfs:comment "Property. Model:''. A language someone may use with or at the item, service or place. Please use one of the language codes from the IETF BCP 47 standard. " .
+
+### https://uri.etsi.org/ngsi-ld/default-context/video
+default:video rdf:type rdfs:Datatype ;
+              owl:onDatatype xsd:anyURI ;
+              rdfs:comment "Property. Model:'https://schema.org/URL'. Url with video related to the item" .
+
+#################################################################
+#    Classes
+#################################################################
+
+### https://uri.etsi.org/ngsi-ld/Entity
+:Entity rdf:type owl:Class ;
+        owl:disjointWith :Property ,
+                         :Relationship ,
+                         :Value .
+
+
+### https://uri.etsi.org/ngsi-ld/Geometry
+:Geometry rdf:type owl:Class ;
+          rdfs:subClassOf :Value .
+
+
+### https://uri.etsi.org/ngsi-ld/LanguageMap
+:LanguageMap rdf:type owl:Class ;
+             rdfs:subClassOf :Value .
+
+
+### https://uri.etsi.org/ngsi-ld/LineString
+:LineString rdf:type owl:Class ;
+            rdfs:subClassOf :Geometry .
+
+
+### https://uri.etsi.org/ngsi-ld/Point
+:Point rdf:type owl:Class ;
+       rdfs:subClassOf :Geometry .
+
+
+### https://uri.etsi.org/ngsi-ld/MultiPoint
+:MultiPoint rdf:type owl:Class ;
+            rdfs:subClassOf :Geometry .
+
+
+### https://uri.etsi.org/ngsi-ld/Polygon
+:Polygon rdf:type owl:Class ;
+         rdfs:subClassOf :Geometry .
+
+
+### https://uri.etsi.org/ngsi-ld/MultiPolygon
+:MultiPolygon rdf:type owl:Class ;
+              rdfs:subClassOf :Geometry .
+
+
+### https://uri.etsi.org/ngsi-ld/Property
+:Property rdf:type owl:Class ;
+          owl:disjointWith :Relationship .
+
+
+### https://uri.etsi.org/ngsi-ld/Relationship
+:Relationship rdf:type owl:Class ;
+              owl:disjointWith :Value .
+
+
+### https://uri.etsi.org/ngsi-ld/Value
+:Value rdf:type owl:Class .
+
+
+### https://smartdatamodels.org/dataModel.Building/BuildingOperation
+building:BuildingOperation rdf:type owl:Class ;
+                           rdfs:subClassOf :Entity ;
+                           rdfs:subClassOf [ rdf:type owl:Restriction ;
+                                             owl:onProperty building:refBuilding ;
+                                             owl:minCardinalityQ "1"^^xsd:nonNegativeInteger
+                                           ] ;
+                           rdfs:subClassOf [ rdf:type owl:Restriction ;
+                                             owl:onProperty smart:startDate ;
+                                             owl:minCardinalityQ "1"^^xsd:nonNegativeInteger
+                                           ] ;
+                           rdfs:subClassOf [ rdf:type owl:Restriction ;
+                                             owl:onProperty smart:endDate ;
+                                             owl:minCardinalityQ "1"^^xsd:nonNegativeInteger
+                                           ] .
+
+
+### https://smartdatamodels.org/dataModel.Building/Building
+building:Building rdf:type owl:Class ;
+                  rdfs:subClassOf :Entity ;
+                  rdfs:subClassOf [ rdf:type owl:Restriction ;
+                                    owl:onProperty building:category ;
+                                    owl:minCardinalityQ "1"^^xsd:nonNegativeInteger
+                                  ] ;
+                  rdfs:subClassOf [ rdf:type owl:Restriction ;
+                                    owl:onProperty smart:address ;
+                                    owl:minCardinalityQ "1"^^xsd:nonNegativeInteger
+                                  ] .
+
+
+### https://uri.etsi.org/ngsi-ld/default-context/addressType
+default:addressType rdf:type owl:Class ;
+                    rdfs:subClassOf :Value ;
+                    rdfs:comment "Value. The mailing address. Model:'https://schema.org/address'" .
+
+
+### https://smartdatamodels.org/dataModel.Building/VibrationsObserved
+building:VibrationsObserved rdf:type owl:Class ;
+                            rdfs:subClassOf :Entity ;
+                            rdfs:subClassOf [ rdf:type owl:Restriction ;
+                                              owl:onProperty smart:dateObserved ;
+                                              owl:minCardinalityQ "1"^^xsd:nonNegativeInteger
+                                            ] ;
+                            rdfs:subClassOf [ rdf:type owl:Restriction ;
+                                              owl:onProperty building:accelerationMeasured ;
+                                              owl:minCardinalityQ "1"^^xsd:nonNegativeInteger
+                                            ] .
+
+
+### https://smartdatamodels.org/dataModel.Energy/ACMeasurement
+energy:ACMeasurement rdf:type owl:Class ;
+                     rdfs:subClassOf :Entity ;
+                     rdfs:subClassOf [ rdf:type owl:Restriction ;
+                                       owl:onProperty ngsi-ld:location ;
+                                       owl:minCardinalityQ "1"^^xsd:nonNegativeInteger
+                                     ] ;
+                     rdfs:subClassOf [ rdf:type owl:Restriction ;
+                                       owl:onProperty smart:dateObserved ;
+                                       owl:minCardinalityQ "1"^^xsd:nonNegativeInteger
+                                     ] ;
+                     rdfs:subClassOf [ rdf:type owl:Restriction ;
+                                       owl:onProperty energy:phaseType ;
+                                       owl:minCardinalityQ "1"^^xsd:nonNegativeInteger
+                                     ] .
+
+
+### https://uri.etsi.org/ngsi-ld/default-context/activeEnergyImportType
+default:activeEnergyImportType rdf:type owl:Class ;
+                               rdfs:subClassOf :Value ;
+                               rdfs:comment "Value. Model:'https://schema.org/StructuredValue'. Active energy imported i.e. consumed per phase. The unit code (text) is given using the [UN/CEFACT Common Codes](http://wiki.goodrelations-vocabulary.org/Documentation/UN/CEFACT_Common_Codes). Units:'kilowatt hour'" .
+
+
+### https://uri.etsi.org/ngsi-ld/default-context/reactiveEnergyImportType
+default:reactiveEnergyImportType rdf:type owl:Class ;
+                                 rdfs:subClassOf :Value ;
+                                 rdfs:comment "Value. Model:'https://schema.org/StructuredValue'. Fundamental frequency reactive energy imported i.e. consumed per phase. The unit code (text) is given using the [UN/CEFACT Common Codes](http://wiki.goodrelations-vocabulary.org/Documentation/UN/CEFACT_Common_Codes). Units:'kilovolt-ampere-reactive-hour'" .
+
+
+### https://uri.etsi.org/ngsi-ld/default-context/apparentEnergyImportType
+default:apparentEnergyImportType rdf:type owl:Class ;
+                                 rdfs:subClassOf :Value ;
+                                 rdfs:comment "Value. Model:'https://schema.org/StructuredValue'. Apparent energy imported i.e. consumed per phase. The unit code (text) is given using the [UN/CEFACT Common Codes](http://wiki.goodrelations-vocabulary.org/Documentation/UN/CEFACT_Common_Codes). Units:'kilovolt-ampere-hour'" .
+
+
+### https://uri.etsi.org/ngsi-ld/default-context/activeEnergyExportType
+default:activeEnergyExportType rdf:type owl:Class ;
+                               rdfs:subClassOf :Value ;
+                               rdfs:comment "Value. Model:'https://schema.org/StructuredValue'. Active energy exported per phase. The unit code (text) is given using the [UN/CEFACT Common Codes](http://wiki.goodrelations-vocabulary.org/Documentation/UN/CEFACT_Common_Codes). Units:'kilowatt hour'" .
+
+
+### https://uri.etsi.org/ngsi-ld/default-context/reactiveEnergyExportType
+default:reactiveEnergyExportType rdf:type owl:Class ;
+                                 rdfs:subClassOf :Value ;
+                                 rdfs:comment "Value. Model:'https://schema.org/StructuredValue'. Fundamental frequency reactive energy exported per phase. The unit code (text) is given using the [UN/CEFACT Common Codes](http://wiki.goodrelations-vocabulary.org/Documentation/UN/CEFACT_Common_Codes). Units:'kilovolt-ampere-reactive-hour'" .
+
+
+### https://uri.etsi.org/ngsi-ld/default-context/apparentEnergyExportType
+default:apparentEnergyExportType rdf:type owl:Class ;
+                                 rdfs:subClassOf :Value ;
+                                 rdfs:comment "Value. Model:'https://schema.org/StructuredValue'. Apparent energy exported per phase. The unit code (text) is given using the [UN/CEFACT Common Codes](http://wiki.goodrelations-vocabulary.org/Documentation/UN/CEFACT_Common_Codes). Units:'kilovolt-ampere-hour'" .
+
+
+### https://uri.etsi.org/ngsi-ld/default-context/activePowerType
+default:activePowerType rdf:type owl:Class ;
+                        rdfs:subClassOf :Value ;
+                        rdfs:comment "Value. Model:'https://schema.org/StructuredValue'. Active power consumed per phase. The unit code (text) is given using the [UN/CEFACT Common Codes](http://wiki.goodrelations-vocabulary.org/Documentation/UN/CEFACT_Common_Codes). Units:'Watt'" .
+
+
+### https://uri.etsi.org/ngsi-ld/default-context/reactivePowerType
+default:reactivePowerType rdf:type owl:Class ;
+                          rdfs:subClassOf :Value ;
+                          rdfs:comment "Value. Model:'https://schema.org/StructuredValue'. Fundamental frequency reactive power. The unit code (text) is given using the [UN/CEFACT Common Codes](http://wiki.goodrelations-vocabulary.org/Documentation/UN/CEFACT_Common_Codes). Units:'volts-ampere-reactive'" .
+
+
+### https://uri.etsi.org/ngsi-ld/default-context/apparentPowerType
+default:apparentPowerType rdf:type owl:Class ;
+                          rdfs:subClassOf :Value ;
+                          rdfs:comment "Value. Model:'https://schema.org/StructuredValue'. Apparent power consumed per phase. The unit code (text) is given using the [UN/CEFACT Common Codes](http://wiki.goodrelations-vocabulary.org/Documentation/UN/CEFACT_Common_Codes). Units:'Watt'" .
+
+
+### https://uri.etsi.org/ngsi-ld/default-context/powerFactorType
+default:powerFactorType rdf:type owl:Class ;
+                        rdfs:subClassOf :Value ;
+                        rdfs:comment "Value. Model:'https://schema.org/StructuredValue'. Power factor for each phase" .
+
+
+### https://uri.etsi.org/ngsi-ld/default-context/displacementPowerFactorType
+default:displacementPowerFactorType rdf:type owl:Class ;
+                                    rdfs:subClassOf :Value ;
+                                    rdfs:comment "Value. Model:'https://schema.org/StructuredValue'. Displacement power factor for each phase. The quantity is based on the fundamental frequency of the system" .
+
+
+### https://uri.etsi.org/ngsi-ld/default-context/currentType
+default:currentType rdf:type owl:Class ;
+                    rdfs:subClassOf :Value ;
+                    rdfs:comment "Value. Model:'https://schema.org/StructuredValue'. Electrical current. The unit code (text) is given using the [UN/CEFACT Common Codes](http://wiki.goodrelations-vocabulary.org/Documentation/UN/CEFACT_Common_Codes). Units:'Ampere'" .
+
+
+### https://uri.etsi.org/ngsi-ld/default-context/phaseVoltageType
+default:phaseVoltageType rdf:type owl:Class ;
+                         rdfs:subClassOf :Value ;
+                         rdfs:comment "Value. Model:'https://schema.org/StructuredValue'. The voltage between each phase and neutral conductor. The unit code (text) is given using the [UN/CEFACT Common Codes](http://wiki.goodrelations-vocabulary.org/Documentation/UN/CEFACT_Common_Codes). Units:'Volts'" .
+
+
+### https://uri.etsi.org/ngsi-ld/default-context/thdVoltageType
+default:thdVoltageType rdf:type owl:Class ;
+                       rdfs:subClassOf :Value ;
+                       rdfs:comment "Value. Model:'https://schema.org/StructuredValue'. Total harmonic distortion of voltage for each phase" .
+
+
+### https://uri.etsi.org/ngsi-ld/default-context/thdCurrentType
+default:thdCurrentType rdf:type owl:Class ;
+                       rdfs:subClassOf :Value ;
+                       rdfs:comment "Value. Model:'https://schema.org/StructuredValue'. Total harmonic distortion of current for each phase" .
+
+
+### https://uri.etsi.org/ngsi-ld/default-context/phaseToPhaseVoltageType
+default:phaseToPhaseVoltageType rdf:type owl:Class ;
+                                rdfs:subClassOf :Value ;
+                                rdfs:comment "Value. Model:'https://schema.org/StructuredValue'. Voltage between phases. The unit code (text) is given using the [UN/CEFACT Common Codes](http://wiki.goodrelations-vocabulary.org/Documentation/UN/CEFACT_Common_Codes). Units:'Volts'" .
+
+
+### https://smartdatamodels.org/dataModel.Energy/InverterDevice
+energy:InverterDevice rdf:type owl:Class ;
+                      rdfs:subClassOf :Entity ;
+                      rdfs:subClassOf [ rdf:type owl:Restriction ;
+                                        owl:onProperty ngsi-ld:location ;
+                                        owl:minCardinalityQ "1"^^xsd:nonNegativeInteger
+                                      ] ;
+                      rdfs:subClassOf [ rdf:type owl:Restriction ;
+                                        owl:onProperty energy:dateLastReported ;
+                                        owl:minCardinalityQ "1"^^xsd:nonNegativeInteger
+                                      ] ;
+                      rdfs:subClassOf [ rdf:type owl:Restriction ;
+                                        owl:onProperty energy:phaseType ;
+                                        owl:minCardinalityQ "1"^^xsd:nonNegativeInteger
+                                      ] .
+
+
+### https://uri.etsi.org/ngsi-ld/default-context/dimensionType
+default:dimensionType rdf:type owl:Class ;
+                      rdfs:subClassOf :Value ;
+                      rdfs:comment "Value. External dimension of a Panel. The format is structured by a sub-property of 3 items. The unit code (text) is given using the [UN/CEFACT Common Codes](http://wiki.goodrelations-vocabulary.org/Documentation/UN/CEFACT_Common_Codes). For instance, **CMT** represents Centimeter. Units:'Centimeters'" .
+
+
+### https://uri.etsi.org/ngsi-ld/default-context/operatingTemperatureType
+default:operatingTemperatureType rdf:type owl:Class ;
+                                 rdfs:subClassOf :Value ;
+                                 rdfs:comment "Value. Ambient operating temperature range. This is the minimum and maximum resistance to cold and heat. The format is structured by a sub-property of 2 items. The unit code (text) is given using the [UN/CEFACT Common Codes](http://wiki.goodrelations-vocabulary.org/Documentation/UN/CEFACT_Common_Codes). For instance, **CEL** represents Degree Celsius" .
+
+
+### https://uri.etsi.org/ngsi-ld/default-context/operatingAirHumidityType
+default:operatingAirHumidityType rdf:type owl:Class ;
+                                 rdfs:subClassOf :Value ;
+                                 rdfs:comment "Value. Ambient operating Air Humidity range. The format is structured by a sub-property of 2 items. The unit code (text) is given using the [UN/CEFACT Common Codes](http://wiki.goodrelations-vocabulary.org/Documentation/UN/CEFACT_Common_Codes). For instance, **P1** represents Percent" .
+
+
+### https://uri.etsi.org/ngsi-ld/default-context/operatingVoltageDCType
+default:operatingVoltageDCType rdf:type owl:Class ;
+                               rdfs:subClassOf :Value ;
+                               rdfs:comment "Value. Minimum and Maximum voltage allowed. The format is structured by a sub-property of 2 items. The unit code (text) is given using the [UN/CEFACT Common Codes](http://wiki.goodrelations-vocabulary.org/Documentation/UN/CEFACT_Common_Codes). For instance, **VLT** represents Volt.. Model:'https://schema.org/Number'. Units:'Volt'" .
+
+
+### https://uri.etsi.org/ngsi-ld/default-context/operatingAmpereDCType
+default:operatingAmpereDCType rdf:type owl:Class ;
+                              rdfs:subClassOf :Value ;
+                              rdfs:comment "Value. Minimum and Maximum Ampere allowed.. The format is structured by a sub-property of 2 items. The unit code (text) is given using the [UN/CEFACT Common Codes](http://wiki.goodrelations-vocabulary.org/Documentation/UN/CEFACT_Common_Codes). For instance, **AMP** represents Ampere. Model:'https://schema.org/Number'. Units:'Ampere'" .
+
+
+### https://uri.etsi.org/ngsi-ld/default-context/operatingFrequencyDCType
+default:operatingFrequencyDCType rdf:type owl:Class ;
+                                 rdfs:subClassOf :Value ;
+                                 rdfs:comment "Value. Minimum and Maximum Frequency allowed. The format is structured by a sub-property of 2 items. The unit code (text) is given using the [UN/CEFACT Common Codes](http://wiki.goodrelations-vocabulary.org/Documentation/UN/CEFACT_Common_Codes). For instance, **HTZ** represents Hertz. Model:'https://schema.org/Number'. Units:'Hertz'" .
+
+
+### https://uri.etsi.org/ngsi-ld/default-context/mPPTPVVoltageDCType
+default:mPPTPVVoltageDCType rdf:type owl:Class ;
+                            rdfs:subClassOf :Value ;
+                            rdfs:comment "Value. Minimum and Maximum Photo-voltaic voltage range, MPPT allowed. The format is structured by a sub-property of 2 items. The unit code (text) is given using the [UN/CEFACT Common Codes](http://wiki.goodrelations-vocabulary.org/Documentation/UN/CEFACT_Common_Codes). For instance, **VLT** represents Volt. Model:'https://schema.org/Number'. Units:'Volt'" .
+
+
+### https://uri.etsi.org/ngsi-ld/default-context/operatingVoltageACType
+default:operatingVoltageACType rdf:type owl:Class ;
+                               rdfs:subClassOf :Value ;
+                               rdfs:comment "Value. Minimum and Maximum voltage allowed. The format is structured by a sub-property of 2 items. The unit code (text) is given using the [UN/CEFACT Common Codes](http://wiki.goodrelations-vocabulary.org/Documentation/UN/CEFACT_Common_Codes). For instance, **VLT** represents Volt. Units:'Volt'. Model:'http://schema.org/StructuredValue'" .
+
+
+### https://uri.etsi.org/ngsi-ld/default-context/operatingAmpereACType
+default:operatingAmpereACType rdf:type owl:Class ;
+                              rdfs:subClassOf :Value ;
+                              rdfs:comment "Value. Minimum and Maximum Ampere allowed.. The format is structured by a sub-property of 2 items. The unit code (text) is given using the [UN/CEFACT Common Codes](http://wiki.goodrelations-vocabulary.org/Documentation/UN/CEFACT_Common_Codes). For instance, **AMP** represents Ampere. Model:'http://schema.org/Number'. Units:'Ampere'" .
+
+
+### https://uri.etsi.org/ngsi-ld/default-context/operatingFrequencyACType
+default:operatingFrequencyACType rdf:type owl:Class ;
+                                 rdfs:subClassOf :Value ;
+                                 rdfs:comment "Value. Minimum and Maximum Frequency allowed. The format is structured by a sub-property of 2 items. The unit code (text) is given using the [UN/CEFACT Common Codes](http://wiki.goodrelations-vocabulary.org/Documentation/UN/CEFACT_Common_Codes). For instance, **HTZ** represents Hertz. Units:'Volt'. Model:'http://schema.org/StructuredValue'. Units:'Hertz'" .
+
+
+### https://uri.etsi.org/ngsi-ld/default-context/moduleYieldRateType
+default:moduleYieldRateType rdf:type owl:Class ;
+                            rdfs:subClassOf :Value ;
+                            rdfs:comment "Value. Yield Rate of the Device. The format is structured by a sub-property of 2 items (European Standard - Manufacturer Standard). The unit code (text) is given using the [UN/CEFACT Common Codes](http://wiki.goodrelations-vocabulary.org/Documentation/UN/CEFACT_Common_Codes). For instance, **P1** represents Percent. Model:'http://schema.org/StructuredValue'" .
+
+
+### https://smartdatamodels.org/dataModel.Energy/TechnicalCabinetDevice
+energy:TechnicalCabinetDevice rdf:type owl:Class ;
+                              rdfs:subClassOf :Entity ;
+                              rdfs:subClassOf [ rdf:type owl:Restriction ;
+                                                owl:onProperty ngsi-ld:location ;
+                                                owl:minCardinalityQ "1"^^xsd:nonNegativeInteger
+                                              ] ;
+                              rdfs:subClassOf [ rdf:type owl:Restriction ;
+                                                owl:onProperty energy:dateLastReported ;
+                                                owl:minCardinalityQ "1"^^xsd:nonNegativeInteger
+                                              ] ;
+                              rdfs:subClassOf [ rdf:type owl:Restriction ;
+                                                owl:onProperty energy:typeOfUse ;
+                                                owl:minCardinalityQ "1"^^xsd:nonNegativeInteger
+                                              ] ;
+                              rdfs:subClassOf [ rdf:type owl:Restriction ;
+                                                owl:onProperty energy:dimension ;
+                                                owl:minCardinalityQ "1"^^xsd:nonNegativeInteger
+                                              ] .
+
+
+### https://uri.etsi.org/ngsi-ld/default-context/internalDimensionType
+default:internalDimensionType rdf:type owl:Class ;
+                              rdfs:subClassOf :Value ;
+                              rdfs:comment "Value. Internal dimension corresponding to the place to work inside the technical cabinet. The format is structured by a sub-property of 3 items. The unit code (text) of measurement  is given using the [UN/CEFACT Common Codes](http://wiki.goodrelations-vocabulary.org/Documentation/UN/CEFACT_Common_Codes). For instance, **CMT** represents Centimeter. Model:'https://schema.org/StructuredValue'" .
+
+
+### https://smartdatamodels.org/dataModel.Energy/ThreePhaseAcMeasurement
+energy:ThreePhaseAcMeasurement rdf:type owl:Class ;
+                               rdfs:subClassOf :Entity .
+
+
+#################################################################
+#    Object Properties
+#################################################################
+
+###  https://uri.etsi.org/ngsi-ld/GeoProperty
+:GeoProperty rdf:type owl:ObjectProperty ;
+             rdfs:subPropertyOf :Property ;
+             rdfs:range :Geometry .
+
+###  https://uri.etsi.org/ngsi-ld/LanguageProperty
+:LanguageProperty rdf:type owl:ObjectProperty ;
+                  rdfs:subPropertyOf :Property ;
+                  rdfs:range :LanguageMap .
+
+###  https://uri.etsi.org/ngsi-ld/Property
+:Property rdf:type owl:ObjectProperty ;
+          rdfs:domain [ rdf:type owl:Class ;
+                        owl:unionOf ( :Entity
+                                      :Property
+                                      :Relationship
+                                    )
+                      ] ;
+          rdfs:range [ rdf:type owl:Class ;
+                       owl:unionOf ( :Property
+                                     :Value
+                                   )
+                     ] .
+
+###  https://uri.etsi.org/ngsi-ld/Relationship
+:Relationship rdf:type owl:ObjectProperty ;
+              rdfs:domain [ rdf:type owl:Class ;
+                            owl:unionOf ( :Entity
+                                          :Property
+                                          :Relationship
+                                        )
+                          ] ;
+              rdfs:range [ rdf:type owl:Class ;
+                           owl:unionOf ( :Entity
+                                         :Relationship
+                                       )
+                         ] .
+
+###  https://uri.etsi.org/ngsi-ld/hasObject
+:hasObject rdf:type owl:ObjectProperty ;
+           rdfs:domain :Relationship ;
+           rdfs:range :Entity .
+
+###  https://uri.etsi.org/ngsi-ld/location
+:location rdf:type owl:ObjectProperty ;
+          rdfs:subPropertyOf :GeoProperty .
+
+###  https://uri.etsi.org/ngsi-ld/observationSpace
+:observationSpace rdf:type owl:ObjectProperty ;
+                  rdfs:subPropertyOf :GeoProperty .
+
+###  https://uri.etsi.org/ngsi-ld/operationSpace
+:operationSpace rdf:type owl:ObjectProperty ;
+                rdfs:subPropertyOf :GeoProperty .
+
+###  https://smartdatamodels.org/owner
+smart:owner rdf:type owl:ObjectProperty ;
+            rdfs:subPropertyOf :Relationship ;
+            rdfs:domain [ rdf:type owl:Class ;
+                          owl:unionOf ( building:BuildingOperation
+                                        building:Building
+                                        building:VibrationsObserved
+                                        energy:ACMeasurement
+                                        energy:InverterDevice
+                                        energy:TechnicalCabinetDevice
+                                        energy:ThreePhaseAcMeasurement
+                                      )
+                        ] ;
+            rdfs:range :Entity ;
+            rdfs:comment "Property. A List containing a JSON encoded sequence of characters referencing the unique Ids of the owner(s)" .
+
+###  https://smartdatamodels.org/dataModel.Building/refBuilding
+building:refBuilding rdf:type owl:ObjectProperty ;
+                     rdfs:subPropertyOf :Relationship ;
+                     rdfs:domain building:BuildingOperation ;
+                     rdfs:range :Entity ;
+                     rdfs:comment "Relationship. Model:'https://schema.org/URL'. Building reference where the operation is performed" .
+
+###  https://smartdatamodels.org/dataModel.Building/refOperator
+building:refOperator rdf:type owl:ObjectProperty ;
+                     rdfs:subPropertyOf :Relationship ;
+                     rdfs:domain building:BuildingOperation ;
+                     rdfs:range :Entity ;
+                     rdfs:comment "Relationship. Model:'https://schema.org/URL'. Reference to the Operator doing the operation on the building" .
+
+###  https://smartdatamodels.org/dataModel.Building/refRelatedBuildingOperation
+building:refRelatedBuildingOperation rdf:type owl:ObjectProperty ;
+                                     rdfs:subPropertyOf :Relationship ;
+                                     rdfs:domain building:BuildingOperation ;
+                                     rdfs:range :Entity ;
+                                     rdfs:comment "Relationship. Reference to other building operations when in sequence" .
+
+###  https://smartdatamodels.org/dataModel.Building/refRelatedDeviceOperation
+building:refRelatedDeviceOperation rdf:type owl:ObjectProperty ;
+                                   rdfs:subPropertyOf :Relationship ;
+                                   rdfs:domain building:BuildingOperation ;
+                                   rdfs:range :Entity ;
+                                   rdfs:comment "Relationship. Devices related to the current operation. Model:'https://schema.org/URL'. A list of references to an entity of type Device" .
+
+###  https://smartdatamodels.org/address
+smart:address rdf:type owl:ObjectProperty ;
+              rdfs:subPropertyOf :Property ;
+              rdfs:domain [ rdf:type owl:Class ;
+                            owl:unionOf ( building:Building
+                                          building:VibrationsObserved
+                                          energy:ACMeasurement
+                                          energy:InverterDevice
+                                          energy:TechnicalCabinetDevice
+                                          energy:ThreePhaseAcMeasurement
+                                        )
+                          ] ;
+              rdfs:range default:addressType ;
+              rdfs:comment "Property. The mailing address. Model:'https://schema.org/address'" .
+
+###  https://smartdatamodels.org/dataModel.Building/occupier
+building:occupier rdf:type owl:ObjectProperty ;
+                  rdfs:subPropertyOf :Relationship ;
+                  rdfs:domain building:Building ;
+                  rdfs:range :Entity ;
+                  rdfs:comment "Relationship. Person or entity using the building. Model:'https://schema.org/URL'" .
+
+###  https://uri.etsi.org/ngsi-ld/default-context/mapUrl
+default:mapUrl rdf:type owl:ObjectProperty ;
+               rdfs:subPropertyOf :Relationship ;
+               rdfs:domain building:Building ;
+               rdfs:range :Entity ;
+               rdfs:comment "Relationship. Reference to the map containing the building" .
+
+###  https://smartdatamodels.org/dataModel.Energy/refDevice
+energy:refDevice rdf:type owl:ObjectProperty ;
+                 rdfs:subPropertyOf :Relationship ;
+                 rdfs:domain [ rdf:type owl:Class ;
+                               owl:unionOf ( energy:ACMeasurement
+                                             energy:InverterDevice
+                                             energy:TechnicalCabinetDevice
+                                             energy:ThreePhaseAcMeasurement
+                                           )
+                             ] ;
+                 rdfs:range :Entity ;
+                 rdfs:comment "Relationship. Device(s) used to obtain the measurement" .
+
+###  https://smartdatamodels.org/dataModel.Energy/refTargetDevice
+energy:refTargetDevice rdf:type owl:ObjectProperty ;
+                       rdfs:subPropertyOf :Relationship ;
+                       rdfs:domain [ rdf:type owl:Class ;
+                                     owl:unionOf ( energy:ACMeasurement
+                                                   energy:ThreePhaseAcMeasurement
+                                                 )
+                                   ] ;
+                       rdfs:range :Entity ;
+                       rdfs:comment "Relationship. Device(s) for which the measurement was taken" .
+
+###  https://smartdatamodels.org/dataModel.Energy/activeEnergyImport
+energy:activeEnergyImport rdf:type owl:ObjectProperty ;
+                          rdfs:subPropertyOf :Property ;
+                          rdfs:domain [ rdf:type owl:Class ;
+                                        owl:unionOf ( energy:ACMeasurement
+                                                      energy:ThreePhaseAcMeasurement
+                                                    )
+                                      ] ;
+                          rdfs:range default:activeEnergyImportType ;
+                          rdfs:comment "Property. Model:'http://schema.org/StructuredValue'. Units:'kilowatt hour (kWh)'. Active energy imported i.e. consumed per Line since the metering start date. The actual values will be conveyed by subproperties which names will be equal to the name of each of the alternating current phases: L1, L2, L3" .
+
+###  https://smartdatamodels.org/dataModel.Energy/reactiveEnergyImport
+energy:reactiveEnergyImport rdf:type owl:ObjectProperty ;
+                            rdfs:subPropertyOf :Property ;
+                            rdfs:domain [ rdf:type owl:Class ;
+                                          owl:unionOf ( energy:ACMeasurement
+                                                        energy:ThreePhaseAcMeasurement
+                                                      )
+                                        ] ;
+                            rdfs:range default:reactiveEnergyImportType ;
+                            rdfs:comment "Property. Model:'http://schema.org/StructuredValue'. Units:'kilovolt-ampere-reactive-hour (kVArh)'. Fundamental frequency reactive energy imported i.e. consumed per phase since the metering start date. The actual values will be conveyed by subproperties which names will be equal to the name of each of the alternating current phases: L1, L2, L3" .
+
+###  https://smartdatamodels.org/dataModel.Energy/apparentEnergyImport
+energy:apparentEnergyImport rdf:type owl:ObjectProperty ;
+                            rdfs:subPropertyOf :Property ;
+                            rdfs:domain [ rdf:type owl:Class ;
+                                          owl:unionOf ( energy:ACMeasurement
+                                                        energy:ThreePhaseAcMeasurement
+                                                      )
+                                        ] ;
+                            rdfs:range default:apparentEnergyImportType ;
+                            rdfs:comment "Property. Model:'http://schema.org/StructuredValue'. Units:'kilovolt-ampere-hour (kVAh)'. Apparent energy imported i.e. consumed per phase since the metering start date. The actual values will be conveyed by subproperties which names will be equal to the name of each of the alternating current phases: L1, L2, L3" .
+
+###  https://smartdatamodels.org/dataModel.Energy/activeEnergyExport
+energy:activeEnergyExport rdf:type owl:ObjectProperty ;
+                          rdfs:subPropertyOf :Property ;
+                          rdfs:domain [ rdf:type owl:Class ;
+                                        owl:unionOf ( energy:ACMeasurement
+                                                      energy:ThreePhaseAcMeasurement
+                                                    )
+                                      ] ;
+                          rdfs:range default:activeEnergyExportType ;
+                          rdfs:comment "Property. Model:'http://schema.org/StructuredValue'. Units:'kilowatt hour (kWh)'. Active energy exported per phase since the metering start date. The actual values will be conveyed by subproperties which names will be equal to the name of each of the alternating current phases: L1, L2, L3" .
+
+###  https://smartdatamodels.org/dataModel.Energy/reactiveEnergyExport
+energy:reactiveEnergyExport rdf:type owl:ObjectProperty ;
+                            rdfs:subPropertyOf :Property ;
+                            rdfs:domain [ rdf:type owl:Class ;
+                                          owl:unionOf ( energy:ACMeasurement
+                                                        energy:ThreePhaseAcMeasurement
+                                                      )
+                                        ] ;
+                            rdfs:range default:reactiveEnergyExportType ;
+                            rdfs:comment "Property. Model:'http://schema.org/StructuredValue'. Units:'kilovolt-ampere-reactive-hour (kVArh)'. Fundamental frequency reactive energy exported per phase since the metering start date. The actual values will be conveyed by subproperties which names will be equal to the name of each of the alternating current phases: L1, L2, L3" .
+
+###  https://smartdatamodels.org/dataModel.Energy/apparentEnergyExport
+energy:apparentEnergyExport rdf:type owl:ObjectProperty ;
+                            rdfs:subPropertyOf :Property ;
+                            rdfs:domain [ rdf:type owl:Class ;
+                                          owl:unionOf ( energy:ACMeasurement
+                                                        energy:ThreePhaseAcMeasurement
+                                                      )
+                                        ] ;
+                            rdfs:range default:apparentEnergyExportType ;
+                            rdfs:comment "Property. Model:'http://schema.org/StructuredValue'. Units:'kilovolt-ampere-hour (kVAh)'. Apparent energy exported per phase since the metering start date. The actual values will be conveyed by subproperties which names will be equal to the name of each of the alternating current phases: L1, L2, L3" .
+
+###  https://smartdatamodels.org/dataModel.Energy/activePower
+energy:activePower rdf:type owl:ObjectProperty ;
+                   rdfs:subPropertyOf :Property ;
+                   rdfs:domain [ rdf:type owl:Class ;
+                                 owl:unionOf ( energy:ACMeasurement
+                                               energy:ThreePhaseAcMeasurement
+                                             )
+                               ] ;
+                   rdfs:range default:activePowerType ;
+                   rdfs:comment "Property. Model:'http://schema.org/StructuredValue'. Units:'watt (W)'.Active power consumed per phase. The actual values will beconveyed by subproperties which names will be equal to the name of each of the alternating current phases: L1, L2, L3. " .
+
+###  https://smartdatamodels.org/dataModel.Energy/reactivePower
+energy:reactivePower rdf:type owl:ObjectProperty ;
+                     rdfs:subPropertyOf :Property ;
+                     rdfs:domain [ rdf:type owl:Class ;
+                                   owl:unionOf ( energy:ACMeasurement
+                                                 energy:ThreePhaseAcMeasurement
+                                               )
+                                 ] ;
+                     rdfs:range default:reactivePowerType ;
+                     rdfs:comment "Property. Model:'http://schema.org/StructuredValue'. Units:'volts-ampere-reactive (VAr)'. Fundamental frequency reactive power. The actual values will be conveyed by subproperties whose names will be equal to the name of each of the alternating current phases: L1, L2, L3" .
+
+###  https://smartdatamodels.org/dataModel.Energy/apparentPower
+energy:apparentPower rdf:type owl:ObjectProperty ;
+                     rdfs:subPropertyOf :Property ;
+                     rdfs:domain [ rdf:type owl:Class ;
+                                   owl:unionOf ( energy:ACMeasurement
+                                                 energy:ThreePhaseAcMeasurement
+                                               )
+                                 ] ;
+                     rdfs:range default:apparentPowerType ;
+                     rdfs:comment "Property. Model:'http://schema.org/StructuredValue'. Units:'volt-ampere (VA)'. Apparent power consumed per phase. The actual values will be conveyed by subproperties which names will be equal to the name of each of the alternating current phases: L1, L2, L3" .
+
+###  https://smartdatamodels.org/dataModel.Energy/powerFactor
+energy:powerFactor rdf:type owl:ObjectProperty ;
+                   rdfs:subPropertyOf :Property ;
+                   rdfs:domain [ rdf:type owl:Class ;
+                                 owl:unionOf ( energy:ACMeasurement
+                                               energy:ThreePhaseAcMeasurement
+                                             )
+                               ] ;
+                   rdfs:range default:powerFactorType ;
+                   rdfs:comment "Property. Model:'http://schema.org/StructuredValue'. Units:'-1 to +1'. Power factor for each phase. The actual values will be conveyed by one subproperty per alternating current phase: L1, L2 and L3" .
+
+###  https://smartdatamodels.org/dataModel.Energy/displacementPowerFactor
+energy:displacementPowerFactor rdf:type owl:ObjectProperty ;
+                               rdfs:subPropertyOf :Property ;
+                               rdfs:domain [ rdf:type owl:Class ;
+                                             owl:unionOf ( energy:ACMeasurement
+                                                           energy:ThreePhaseAcMeasurement
+                                                         )
+                                           ] ;
+                               rdfs:range default:displacementPowerFactorType ;
+                               rdfs:comment "Property. Model:'http://schema.org/StructuredValue'. Units:'-1 to +1'. Displacement power factor for each phase. The quantity is based on the fundamental frequency of the system. The actual values will be conveyed by one subproperty per alternating current phase: L1, L2 and L3" .
+
+###  https://smartdatamodels.org/dataModel.Energy/current
+energy:current rdf:type owl:ObjectProperty ;
+               rdfs:subPropertyOf :Property ;
+               rdfs:domain [ rdf:type owl:Class ;
+                             owl:unionOf ( energy:ACMeasurement
+                                           energy:ThreePhaseAcMeasurement
+                                         )
+                           ] ;
+               rdfs:range default:currentType ;
+               rdfs:comment "Property. Model:'http://schema.org/StructuredValue'. Units:'Ampers (A)'. Electrical current. The actual values will be conveyed by one subproperty per alternating current phase and the neutral wire: L1, L2, L3 and N" .
+
+###  https://smartdatamodels.org/dataModel.Energy/phaseVoltage
+energy:phaseVoltage rdf:type owl:ObjectProperty ;
+                    rdfs:subPropertyOf :Property ;
+                    rdfs:domain [ rdf:type owl:Class ;
+                                  owl:unionOf ( energy:ACMeasurement
+                                                energy:ThreePhaseAcMeasurement
+                                              )
+                                ] ;
+                    rdfs:range default:phaseVoltageType ;
+                    rdfs:comment "Property. Model:'http://schema.org/StructuredValue'. Units:'Volts (V)'. The voltage between each phase and neutral conductor. The actual values will be conveyed by one subproperty per alternating current phase: L1, L2 and L3" .
+
+###  https://smartdatamodels.org/dataModel.Energy/thdVoltage
+energy:thdVoltage rdf:type owl:ObjectProperty ;
+                  rdfs:subPropertyOf :Property ;
+                  rdfs:domain [ rdf:type owl:Class ;
+                                owl:unionOf ( energy:ACMeasurement
+                                              energy:ThreePhaseAcMeasurement
+                                            )
+                              ] ;
+                  rdfs:range default:thdVoltageType ;
+                  rdfs:comment "Property. Model:'http://schema.org/StructuredValue'. Units:'0 to 1'. Total harmonic distortion of voltage for each phase. The actual values will be conveyed by one subproperty per alternating current phase: L1, L2 and L3" .
+
+###  https://smartdatamodels.org/dataModel.Energy/thdCurrent
+energy:thdCurrent rdf:type owl:ObjectProperty ;
+                  rdfs:subPropertyOf :Property ;
+                  rdfs:domain [ rdf:type owl:Class ;
+                                owl:unionOf ( energy:ACMeasurement
+                                              energy:ThreePhaseAcMeasurement
+                                            )
+                              ] ;
+                  rdfs:range default:thdCurrentType ;
+                  rdfs:comment "Property. Model:'http://schema.org/StructuredValue'. Units:'0 to 1'. Total harmonic distortion of electrical current. The actual values will be conveyed by one subproperty per alternating current phase: L1, L2 and L3" .
+
+###  https://smartdatamodels.org/dataModel.Energy/phaseToPhaseVoltage
+energy:phaseToPhaseVoltage rdf:type owl:ObjectProperty ;
+                           rdfs:subPropertyOf :Property ;
+                           rdfs:domain [ rdf:type owl:Class ;
+                                         owl:unionOf ( energy:ACMeasurement
+                                                       energy:ThreePhaseAcMeasurement
+                                                     )
+                                       ] ;
+                           rdfs:range default:phaseToPhaseVoltageType ;
+                           rdfs:comment "Property. Model:'http://schema.org/StructuredValue'. Units:'Volts (V)'. Voltage between phases. A value for each phase pair: phases 1 and 2 (L12), phases 2 and 3 (L32), phases 3 and 1 (L31)" .
+
+###  https://smartdatamodels.org/dataModel.Energy/refPointOfInterest
+energy:refPointOfInterest rdf:type owl:ObjectProperty ;
+                          rdfs:subPropertyOf :Relationship ;
+                          rdfs:domain [ rdf:type owl:Class ;
+                                        owl:unionOf ( energy:InverterDevice
+                                                      energy:TechnicalCabinetDevice
+                                                    )
+                                      ] ;
+                          rdfs:range :Entity ;
+                          rdfs:comment "Relationship. Reference to a [PointOfInterest](https://github.com/smart-data-models/dataModel.PointOfInterest/blob/master/PointOfInterest/doc/spec.md) linked with the observation" .
+
+###  https://smartdatamodels.org/dataModel.Energy/dimension
+energy:dimension rdf:type owl:ObjectProperty ;
+                 rdfs:subPropertyOf :Property ;
+                 rdfs:domain [ rdf:type owl:Class ;
+                               owl:unionOf ( energy:InverterDevice
+                                             energy:TechnicalCabinetDevice
+                                           )
+                             ] ;
+                 rdfs:range default:dimensionType ;
+                 rdfs:comment "Property. The format is structured by a sub-property of 3 items. The unit code (text) of measurement  is given using the [UN/CEFACT Common Codes](http://wiki.goodrelations-vocabulary.org/Documentation/UN/CEFACT_Common_Codes). For instance, **CMT** represents Centimeter" .
+
+###  https://smartdatamodels.org/dataModel.Energy/operatingTemperature
+energy:operatingTemperature rdf:type owl:ObjectProperty ;
+                            rdfs:subPropertyOf :Property ;
+                            rdfs:domain [ rdf:type owl:Class ;
+                                          owl:unionOf ( energy:InverterDevice
+                                                        energy:TechnicalCabinetDevice
+                                                      )
+                                        ] ;
+                            rdfs:range default:operatingTemperatureType ;
+                            rdfs:comment "Property. Ambient operating temperature range. This is the minimum and maximum resistance to cold and heat. The format is structured by a sub-property of 2 items. The unit code (text) is given using the [UN/CEFACT Common Codes](http://wiki.goodrelations-vocabulary.org/Documentation/UN/CEFACT_Common_Codes). For instance, **CEL** represents Degree Celsius" .
+
+###  https://smartdatamodels.org/dataModel.Energy/operatingAirHumidity
+energy:operatingAirHumidity rdf:type owl:ObjectProperty ;
+                            rdfs:subPropertyOf :Property ;
+                            rdfs:domain energy:InverterDevice ;
+                            rdfs:range default:operatingAirHumidityType ;
+                            rdfs:comment "Property. Ambient operating Air Humidity range. The format is structured by a sub-property of 2 items. The unit code (text) is given using the [UN/CEFACT Common Codes](http://wiki.goodrelations-vocabulary.org/Documentation/UN/CEFACT_Common_Codes). For instance, **P1** represents Percent" .
+
+###  https://smartdatamodels.org/dataModel.Energy/operatingVoltageDC
+energy:operatingVoltageDC rdf:type owl:ObjectProperty ;
+                          rdfs:subPropertyOf :Property ;
+                          rdfs:domain energy:InverterDevice ;
+                          rdfs:range default:operatingVoltageDCType ;
+                          rdfs:comment "Property. Minimum and Maximum voltage allowed. The format is structured by a sub-property of 2 items. The unit code (text) is given using the [UN/CEFACT Common Codes](http://wiki.goodrelations-vocabulary.org/Documentation/UN/CEFACT_Common_Codes). For instance, **VLT** represents Volt.. Model:'https://schema.org/Number'. Units:'Volt'" .
+
+###  https://smartdatamodels.org/dataModel.Energy/operatingAmpereDC
+energy:operatingAmpereDC rdf:type owl:ObjectProperty ;
+                         rdfs:subPropertyOf :Property ;
+                         rdfs:domain energy:InverterDevice ;
+                         rdfs:range default:operatingAmpereDCType ;
+                         rdfs:comment "Property. Minimum and Maximum Ampere allowed.. The format is structured by a sub-property of 2 items. The unit code (text) is given using the [UN/CEFACT Common Codes](http://wiki.goodrelations-vocabulary.org/Documentation/UN/CEFACT_Common_Codes). For instance, **AMP** represents Ampere. Model:'https://schema.org/Number'. Units:'Ampere'" .
+
+###  https://smartdatamodels.org/dataModel.Energy/operatingFrequencyDC
+energy:operatingFrequencyDC rdf:type owl:ObjectProperty ;
+                            rdfs:subPropertyOf :Property ;
+                            rdfs:domain energy:InverterDevice ;
+                            rdfs:range default:operatingFrequencyDCType ;
+                            rdfs:comment "Property. Minimum and Maximum Frequency allowed. The format is structured by a sub-property of 2 items. The unit code (text) is given using the [UN/CEFACT Common Codes](http://wiki.goodrelations-vocabulary.org/Documentation/UN/CEFACT_Common_Codes). For instance, **HTZ** represents Hertz. Model:'https://schema.org/Number'. Units:'Hertz'" .
+
+###  https://smartdatamodels.org/dataModel.Energy/mPPTPVVoltageDC
+energy:mPPTPVVoltageDC rdf:type owl:ObjectProperty ;
+                       rdfs:subPropertyOf :Property ;
+                       rdfs:domain energy:InverterDevice ;
+                       rdfs:range default:mPPTPVVoltageDCType ;
+                       rdfs:comment "Property. Minimum and Maximum Photo-voltaic voltage range, MPPT allowed. The format is structured by a sub-property of 2 items. The unit code (text) is given using the [UN/CEFACT Common Codes](http://wiki.goodrelations-vocabulary.org/Documentation/UN/CEFACT_Common_Codes). For instance, **VLT** represents Volt. Model:'https://schema.org/Number'. Units:'Volt'" .
+
+###  https://smartdatamodels.org/dataModel.Energy/operatingVoltageAC
+energy:operatingVoltageAC rdf:type owl:ObjectProperty ;
+                          rdfs:subPropertyOf :Property ;
+                          rdfs:domain energy:InverterDevice ;
+                          rdfs:range default:operatingVoltageACType ;
+                          rdfs:comment "Property. Minimum and Maximum voltage allowed. The format is structured by a sub-property of 2 items. The unit code (text) is given using the [UN/CEFACT Common Codes](http://wiki.goodrelations-vocabulary.org/Documentation/UN/CEFACT_Common_Codes). For instance, **VLT** represents Volt. Units:'Volt'. Model:'http://schema.org/StructuredValue'" .
+
+###  https://smartdatamodels.org/dataModel.Energy/operatingAmpereAC
+energy:operatingAmpereAC rdf:type owl:ObjectProperty ;
+                         rdfs:subPropertyOf :Property ;
+                         rdfs:domain energy:InverterDevice ;
+                         rdfs:range default:operatingAmpereACType ;
+                         rdfs:comment "Property. Minimum and Maximum Ampere allowed.. The format is structured by a sub-property of 2 items. The unit code (text) is given using the [UN/CEFACT Common Codes](http://wiki.goodrelations-vocabulary.org/Documentation/UN/CEFACT_Common_Codes). For instance, **AMP** represents Ampere. Model:'http://schema.org/Number'. Units:'Ampere'" .
+
+###  https://smartdatamodels.org/dataModel.Energy/operatingFrequencyAC
+energy:operatingFrequencyAC rdf:type owl:ObjectProperty ;
+                            rdfs:subPropertyOf :Property ;
+                            rdfs:domain energy:InverterDevice ;
+                            rdfs:range default:operatingFrequencyACType ;
+                            rdfs:comment "Property. Minimum and Maximum Frequency allowed. The format is structured by a sub-property of 2 items. The unit code (text) is given using the [UN/CEFACT Common Codes](http://wiki.goodrelations-vocabulary.org/Documentation/UN/CEFACT_Common_Codes). For instance, **HTZ** represents Hertz. Units:'Volt'. Model:'http://schema.org/StructuredValue'. Units:'Hertz'" .
+
+###  https://smartdatamodels.org/dataModel.Energy/moduleYieldRate
+energy:moduleYieldRate rdf:type owl:ObjectProperty ;
+                       rdfs:subPropertyOf :Property ;
+                       rdfs:domain energy:InverterDevice ;
+                       rdfs:range default:moduleYieldRateType ;
+                       rdfs:comment "Property. Yield Rate of the Device. The format is structured by a sub-property of 2 items (European Standard - Manufacturer Standard). The unit code (text) is given using the [UN/CEFACT Common Codes](http://wiki.goodrelations-vocabulary.org/Documentation/UN/CEFACT_Common_Codes). For instance, **P1** represents Percent. Model:'http://schema.org/StructuredValue'" .
+
+###  https://smartdatamodels.org/dataModel.Energy/refDeviceList
+energy:refDeviceList rdf:type owl:ObjectProperty ;
+                     rdfs:subPropertyOf :Relationship ;
+                     rdfs:domain energy:TechnicalCabinetDevice ;
+                     rdfs:range :Entity ;
+                     rdfs:comment "Relationship. A list of reference to the [Devices](https://github.com/smart-data-models/dataModel.Device/blob/master/Device/doc/spec.md) which are inside the technical Cabinet Device" .
+
+###  https://smartdatamodels.org/dataModel.Energy/internalDimension
+energy:internalDimension rdf:type owl:ObjectProperty ;
+                         rdfs:subPropertyOf :Property ;
+                         rdfs:domain energy:TechnicalCabinetDevice ;
+                         rdfs:range default:internalDimensionType ;
+                         rdfs:comment "Property. Internal dimension corresponding to the place to work inside the technical cabinet. The format is structured by a sub-property of 3 items. The unit code (text) of measurement  is given using the [UN/CEFACT Common Codes](http://wiki.goodrelations-vocabulary.org/Documentation/UN/CEFACT_Common_Codes). For instance, **CMT** represents Centimeter. Model:'https://schema.org/StructuredValue'" .
+
+#################################################################
+#    Data Properties
+#################################################################
+
+###  https://uri.etsi.org/ngsi-ld/TemporalProperty
+:TemporalProperty rdf:type owl:DatatypeProperty .
+
+###  https://uri.etsi.org/ngsi-ld/createdAt
+:createdAt rdf:type owl:DatatypeProperty ;
+           rdfs:range xsd:dateTime .
+
+###  https://uri.etsi.org/ngsi-ld/hasValue
+:hasValue rdf:type owl:DatatypeProperty ;
+          rdfs:domain :Property .
+
+###  https://uri.etsi.org/ngsi-ld/hasLanguageMap
+:hasLanguageMap rdf:type owl:DatatypeProperty ;
+                rdfs:domain :LanguageProperty ;
+                rdfs:range :LanguageMap .
+
+###  https://uri.etsi.org/ngsi-ld/modifiedAt
+:modifiedAt rdf:type owl:DatatypeProperty ;
+            rdfs:range xsd:dateTime .
+
+###  https://uri.etsi.org/ngsi-ld/observedAt
+:observedAt rdf:type owl:DatatypeProperty ;
+            rdfs:range xsd:dateTime .
+
+###  https://uri.etsi.org/ngsi-ld/unitCode
+:unitCode rdf:type owl:DatatypeProperty ;
+          rdfs:range xsd:string .
+
+###  https://uri.etsi.org/ngsi-ld/scope
+:scope rdf:type owl:DatatypeProperty ;
+       rdfs:range xsd:string .
+
+###  https://uri.etsi.org/ngsi-ld/coordinates
+:coordinates rdf:type owl:DatatypeProperty ;
+             rdfs:domain :Geometry ;
+             rdfs:range rdf:List .
+
+###  https://uri.etsi.org/ngsi-ld/bbox
+:bbox rdf:type owl:DatatypeProperty ;
+      rdfs:domain :Geometry ;
+      rdfs:range rdf:List .
+
+###  https://smartdatamodels.org/dateCreated
+smart:dateCreated rdf:type owl:DatatypeProperty ;
+                  rdfs:subPropertyOf :Property ;
+                  rdfs:domain [ rdf:type owl:Class ;
+                                owl:unionOf ( building:BuildingOperation
+                                              building:Building
+                                              building:VibrationsObserved
+                                              energy:ACMeasurement
+                                              energy:InverterDevice
+                                              energy:TechnicalCabinetDevice
+                                              energy:ThreePhaseAcMeasurement
+                                            )
+                              ] ;
+                  rdfs:range xsd:dateTime ;
+                  rdfs:comment "Property. Entity creation timestamp. This will usually be allocated by the storage platform" .
+
+###  https://smartdatamodels.org/dateModified
+smart:dateModified rdf:type owl:DatatypeProperty ;
+                   rdfs:subPropertyOf :Property ;
+                   rdfs:domain [ rdf:type owl:Class ;
+                                 owl:unionOf ( building:BuildingOperation
+                                               building:Building
+                                               building:VibrationsObserved
+                                               energy:ACMeasurement
+                                               energy:InverterDevice
+                                               energy:TechnicalCabinetDevice
+                                               energy:ThreePhaseAcMeasurement
+                                             )
+                               ] ;
+                   rdfs:range xsd:dateTime ;
+                   rdfs:comment "Property. Timestamp of the last modification of the entity. This will usually be allocated by the storage platform" .
+
+###  https://smartdatamodels.org/source
+smart:source rdf:type owl:DatatypeProperty ;
+             rdfs:subPropertyOf :Property ;
+             rdfs:domain [ rdf:type owl:Class ;
+                           owl:unionOf ( building:BuildingOperation
+                                         building:Building
+                                         building:VibrationsObserved
+                                         energy:ACMeasurement
+                                         energy:InverterDevice
+                                         energy:TechnicalCabinetDevice
+                                         energy:ThreePhaseAcMeasurement
+                                       )
+                         ] ;
+             rdfs:range xsd:string ;
+             rdfs:comment "Property. A sequence of characters giving the original source of the entity data as a URL. Recommended to be the fully qualified domain name of the source provider, or the URL to the source object" .
+
+###  https://smartdatamodels.org/name
+smart:name rdf:type owl:DatatypeProperty ;
+           rdfs:subPropertyOf :Property ;
+           rdfs:domain [ rdf:type owl:Class ;
+                         owl:unionOf ( building:BuildingOperation
+                                       building:Building
+                                       building:VibrationsObserved
+                                       energy:ACMeasurement
+                                       energy:InverterDevice
+                                       energy:TechnicalCabinetDevice
+                                       energy:ThreePhaseAcMeasurement
+                                     )
+                       ] ;
+           rdfs:range xsd:string ;
+           rdfs:comment "Property. The name of this item" .
+
+###  https://smartdatamodels.org/alternateName
+smart:alternateName rdf:type owl:DatatypeProperty ;
+                    rdfs:subPropertyOf :Property ;
+                    rdfs:domain [ rdf:type owl:Class ;
+                                  owl:unionOf ( building:BuildingOperation
+                                                building:Building
+                                                building:VibrationsObserved
+                                                energy:ACMeasurement
+                                                energy:InverterDevice
+                                                energy:TechnicalCabinetDevice
+                                                energy:ThreePhaseAcMeasurement
+                                              )
+                                ] ;
+                    rdfs:range xsd:string ;
+                    rdfs:comment "Property. An alternative name for this item" .
+
+###  http://purl.org/dc/terms/description
+purlterms:description rdf:type owl:DatatypeProperty ;
+                      rdfs:subPropertyOf :Property ;
+                      rdfs:domain [ rdf:type owl:Class ;
+                                    owl:unionOf ( building:BuildingOperation
+                                                  building:Building
+                                                  building:VibrationsObserved
+                                                  energy:ACMeasurement
+                                                  energy:InverterDevice
+                                                  energy:TechnicalCabinetDevice
+                                                  energy:ThreePhaseAcMeasurement
+                                                )
+                                  ] ;
+                      rdfs:range xsd:string ;
+                      rdfs:comment "Property. A description of this item" .
+
+###  https://smartdatamodels.org/dataProvider
+smart:dataProvider rdf:type owl:DatatypeProperty ;
+                   rdfs:subPropertyOf :Property ;
+                   rdfs:domain [ rdf:type owl:Class ;
+                                 owl:unionOf ( building:BuildingOperation
+                                               building:Building
+                                               building:VibrationsObserved
+                                               energy:ACMeasurement
+                                               energy:InverterDevice
+                                               energy:TechnicalCabinetDevice
+                                               energy:ThreePhaseAcMeasurement
+                                             )
+                               ] ;
+                   rdfs:range xsd:string ;
+                   rdfs:comment "Property. A sequence of characters identifying the provider of the harmonised data entity" .
+
+###  https://smartdatamodels.org/seeAlso
+smart:seeAlso rdf:type owl:DatatypeProperty ;
+              rdfs:subPropertyOf :Property ;
+              rdfs:domain building:BuildingOperation ;
+              rdfs:range [ rdf:type rdfs:Datatype ;
+                           owl:unionOf ( xsd:anyURI
+                                         rdf:List
+                                        )
+                          ] ;
+              rdfs:comment "Property. list of uri pointing to additional resources about the item -- item_type:xsd:anyURI." .
+
+###  https://smartdatamodels.org/dataModel.Building/operationType
+building:operationType rdf:type owl:DatatypeProperty ;
+                       rdfs:subPropertyOf :Property ;
+                       rdfs:domain building:BuildingOperation ;
+                       rdfs:range xsd:string ;
+                       rdfs:comment "Property. Model:'https://schema.org/Text'. Type of the operation on the building" .
+
+###  https://smartdatamodels.org/dataModel.Building/result
+building:result rdf:type owl:DatatypeProperty ;
+                rdfs:subPropertyOf :Property ;
+                rdfs:domain building:BuildingOperation ;
+                rdfs:range xsd:string ;
+                rdfs:comment "Property. Result of the building operation. Model:'https://schema.org/Text'. Enum:'ok, aborted'" .
+
+###  https://smartdatamodels.org/startDate
+smart:startDate rdf:type owl:DatatypeProperty ;
+                rdfs:subPropertyOf :Property ;
+                rdfs:domain building:BuildingOperation ;
+                rdfs:range xsd:dateTime ;
+                rdfs:comment "Property. Model:'https://schema.org/DateTime'. The planned start date for the operation" .
+
+###  https://smartdatamodels.org/endDate
+smart:endDate rdf:type owl:DatatypeProperty ;
+              rdfs:subPropertyOf :Property ;
+              rdfs:domain building:BuildingOperation ;
+              rdfs:range xsd:dateTime ;
+              rdfs:comment "Property. Model:'https://schema.org/DateTime'. The planned end date for the operation" .
+
+###  https://smartdatamodels.org/dataModel.Building/dateStarted
+building:dateStarted rdf:type owl:DatatypeProperty ;
+                     rdfs:subPropertyOf :Property ;
+                     rdfs:domain building:BuildingOperation ;
+                     rdfs:range xsd:dateTime ;
+                     rdfs:comment "Property. Model:'https://schema.org/DateTime'. The actual start date for the operation" .
+
+###  https://smartdatamodels.org/dataModel.Building/dateFinished
+building:dateFinished rdf:type owl:DatatypeProperty ;
+                      rdfs:subPropertyOf :Property ;
+                      rdfs:domain building:BuildingOperation ;
+                      rdfs:range xsd:dateTime ;
+                      rdfs:comment "Property. Model:'https://schema.org/DateTime'. The actual end date for the operation" .
+
+###  ngsi-ld:status
+ngsi-ld:status rdf:type owl:DatatypeProperty ;
+               rdfs:subPropertyOf :Property ;
+               rdfs:domain building:BuildingOperation ;
+               rdfs:range xsd:string ;
+               rdfs:comment "Property. Status of the operation. Model:'https://schema.org/Text'. Enum:'cancelled, finished, ongoing, planned, scheduled' " .
+
+###  https://smartdatamodels.org/dataModel.Building/operationSequence
+building:operationSequence rdf:type owl:DatatypeProperty ;
+                           rdfs:subPropertyOf :Property ;
+                           rdfs:domain building:BuildingOperation ;
+                           rdfs:range rdf:List ;
+                           rdfs:comment "Property. Model:'https://schema.org/Text'. Id of the sequence of the operation when available -- item_type:xsd:string." .
+
+###  https://smartdatamodels.org/streetAddress
+smart:streetAddress rdf:type owl:DatatypeProperty ;
+                    rdfs:domain default:addressType ;
+                    rdfs:range xsd:string ;
+                    rdfs:comment "Property. The street address. Model:'https://schema.org/streetAddress'" .
+
+###  https://smartdatamodels.org/addressLocality
+smart:addressLocality rdf:type owl:DatatypeProperty ;
+                      rdfs:domain default:addressType ;
+                      rdfs:range xsd:string ;
+                      rdfs:comment "Property. The locality in which the street address is, and which is in the region. Model:'https://schema.org/addressLocality'" .
+
+###  https://smartdatamodels.org/addressRegion
+smart:addressRegion rdf:type owl:DatatypeProperty ;
+                    rdfs:domain default:addressType ;
+                    rdfs:range xsd:string ;
+                    rdfs:comment "Property. The region in which the locality is, and which is in the country. Model:'https://schema.org/addressRegion'" .
+
+###  https://smartdatamodels.org/addressCountry
+smart:addressCountry rdf:type owl:DatatypeProperty ;
+                     rdfs:domain default:addressType ;
+                     rdfs:range xsd:string ;
+                     rdfs:comment "Property. The country. For example, Spain. Model:'https://schema.org/addressCountry'" .
+
+###  https://smartdatamodels.org/postalCode
+smart:postalCode rdf:type owl:DatatypeProperty ;
+                 rdfs:domain default:addressType ;
+                 rdfs:range xsd:string ;
+                 rdfs:comment "Property. The postal code. For example, 24004. Model:'https://schema.org/https://schema.org/postalCode'" .
+
+###  https://smartdatamodels.org/postOfficeBoxNumber
+smart:postOfficeBoxNumber rdf:type owl:DatatypeProperty ;
+                          rdfs:domain default:addressType ;
+                          rdfs:range xsd:string ;
+                          rdfs:comment "Property. The post office box number for PO box addresses. For example, 03578. Model:'https://schema.org/postOfficeBoxNumber'" .
+
+###  https://smartdatamodels.org/streetNr
+smart:streetNr rdf:type owl:DatatypeProperty ;
+               rdfs:domain default:addressType ;
+               rdfs:range xsd:string ;
+               rdfs:comment "Property. Number identifying a specific property on a public street" .
+
+###  https://smartdatamodels.org/district
+smart:district rdf:type owl:DatatypeProperty ;
+               rdfs:domain default:addressType ;
+               rdfs:range xsd:string ;
+               rdfs:comment "Property. A district is a type of administrative division that, in some countries, is managed by the local government" .
+
+###  https://smartdatamodels.org/areaServed
+smart:areaServed rdf:type owl:DatatypeProperty ;
+                 rdfs:subPropertyOf :Property ;
+                 rdfs:domain [ rdf:type owl:Class ;
+                               owl:unionOf ( building:Building
+                                             building:VibrationsObserved
+                                             energy:ACMeasurement
+                                             energy:InverterDevice
+                                             energy:TechnicalCabinetDevice
+                                             energy:ThreePhaseAcMeasurement
+                                           )
+                             ] ;
+                 rdfs:range xsd:string ;
+                 rdfs:comment "Property. The geographic area where a service or offered item is provided. Model:'https://schema.org/Text'" .
+
+###  https://smartdatamodels.org/dataModel.Building/category
+building:category rdf:type owl:DatatypeProperty ;
+                  rdfs:subPropertyOf :Property ;
+                  rdfs:domain building:Building ;
+                  rdfs:range rdf:List ;
+                  rdfs:comment "Property. Category of the building. Enum:'apartments, bakehouse, barn, bridge, bungalow, bunker, cathedral, cabin, carport, chapel, church, civic, commercial, conservatory, construction, cowshed, detached, digester, dormitory, farm, farm_auxiliary, garage, garages, garbage_shed, grandstand, greenhouse, hangar, hospital, hotel, house, houseboat, hut, industrial, kindergarten, kiosk, mosque, office, parking, pavilion, public, residential, retail, riding_hall, roof, ruins, school, service, shed, shrine, stable, stadium, static_caravan, sty, synagogue, temple, terrace, train_station, transformer_tower, transportation, university, warehouse, water_tower' -- item_type:xsd:string, item_enum:['apartments', 'bakehouse', 'barn', 'bridge', 'bungalow', 'bunker', 'cathedral', 'cabin', 'carport', 'cemetery', 'chapel', 'church', 'civic', 'commercial', 'conservatory', 'construction', 'cowshed', 'detached', 'digester', 'dormitory', 'farm', 'farm_auxiliary', 'garage', 'garages', 'garbage_shed', 'grandstand', 'greenhouse', 'hangar', 'hospital', 'hotel', 'house', 'houseboat', 'hut', 'industrial', 'kindergarten', 'kiosk', 'mosque', 'office', 'parking', 'pavilion', 'public', 'residential', 'retail', 'riding_hall', 'roof', 'ruins', 'school', 'service', 'shed', 'shrine', 'stable', 'stadium', 'static_caravan', 'sty', 'synagogue', 'temple', 'terrace', 'train_station', 'transformer_tower', 'transportation', 'university', 'warehouse', 'water_tower']." .
+
+###  https://smartdatamodels.org/dataModel.Building/containedInPlace
+building:containedInPlace rdf:type owl:DatatypeProperty ;
+                          rdfs:subPropertyOf :Property ;
+                          rdfs:domain building:Building ;
+                          rdfs:range common:location .
+
+###  https://smartdatamodels.org/dataModel.Building/floorsAboveGround
+building:floorsAboveGround rdf:type owl:DatatypeProperty ;
+                           rdfs:subPropertyOf :Property ;
+                           rdfs:domain building:Building ;
+                           rdfs:range xsd:integer ;
+                           rdfs:comment "Property. Floors above the ground level. Model:'https://schema.org/Number'" .
+
+###  https://smartdatamodels.org/dataModel.Building/floorsBelowGround
+building:floorsBelowGround rdf:type owl:DatatypeProperty ;
+                           rdfs:subPropertyOf :Property ;
+                           rdfs:domain building:Building ;
+                           rdfs:range xsd:integer ;
+                           rdfs:comment "Property. Floors below the ground level. Model:'https://schema.org/Number'" .
+
+###  https://smartdatamodels.org/openingHours
+smart:openingHours rdf:type owl:DatatypeProperty ;
+                   rdfs:subPropertyOf :Property ;
+                   rdfs:domain building:Building ;
+                   rdfs:range rdf:List ;
+                   rdfs:comment "Property. Model:'https://schema.org/openingHours'. Opening hours of this building -- item_type:xsd:string." .
+
+###  https://smartdatamodels.org/dataModel.Building/collapseRisk
+building:collapseRisk rdf:type owl:DatatypeProperty ;
+                      rdfs:subPropertyOf :Property ;
+                      rdfs:domain building:Building ;
+                      rdfs:range xsd:float ;
+                      rdfs:comment "Property. Model:'https://schema.org/Number'. Probability of total collapse of the building" .
+
+###  https://smartdatamodels.org/dataModel.Building/peopleCapacity
+building:peopleCapacity rdf:type owl:DatatypeProperty ;
+                        rdfs:subPropertyOf :Property ;
+                        rdfs:domain building:Building ;
+                        rdfs:range xsd:float ;
+                        rdfs:comment "Property. Model:'https://schema.org/Number'. Allowed people present at the building" .
+
+###  https://smartdatamodels.org/dataModel.Building/peopleOccupancy
+building:peopleOccupancy rdf:type owl:DatatypeProperty ;
+                         rdfs:subPropertyOf :Property ;
+                         rdfs:domain building:Building ;
+                         rdfs:range xsd:float ;
+                         rdfs:comment "Property. Model:'https://schema.org/Number'. People present at the building" .
+
+###  https://smartdatamodels.org/dateObserved
+smart:dateObserved rdf:type owl:DatatypeProperty ;
+                   rdfs:subPropertyOf :Property ;
+                   rdfs:domain [ rdf:type owl:Class ;
+                                 owl:unionOf ( building:VibrationsObserved
+                                               energy:ACMeasurement
+                                             )
+                               ] ;
+                   rdfs:range xsd:dateTime ;
+                   rdfs:comment "Property. Model:'https://schema.org/DateTime'. Date and time of this observation represented by an ISO8601 UTC format. It can be represented by an specific time instant or by an ISO8601 interval to separate attributes `dateObservedFrom`,`dateObservedTo`" .
+
+###  https://smartdatamodels.org/dataModel.Building/accelerationMeasured
+building:accelerationMeasured rdf:type owl:DatatypeProperty ;
+                              rdfs:subPropertyOf :Property ;
+                              rdfs:domain building:VibrationsObserved ;
+                              rdfs:range xsd:float ;
+                              rdfs:comment "Property. Model:'https://schema.org/Number'. Magnitude of the vibrations observed (e.g. Earthquake) or other floor movements. Units:'m/s2'" .
+
+###  https://smartdatamodels.org/dataModel.Energy/dateObservedFrom
+energy:dateObservedFrom rdf:type owl:DatatypeProperty ;
+                        rdfs:subPropertyOf :Property ;
+                        rdfs:domain energy:ACMeasurement ;
+                        rdfs:range xsd:dateTime ;
+                        rdfs:comment "Property. Model:'https://schema.org/DateTime'. Observation period: Start date and time in an ISO8601 UTC format. The attribute can be used in addition to the `dateObserved` attribute when it corresponds to a time interval to be highlighted" .
+
+###  https://smartdatamodels.org/dataModel.Energy/dateObservedTo
+energy:dateObservedTo rdf:type owl:DatatypeProperty ;
+                      rdfs:subPropertyOf :Property ;
+                      rdfs:domain energy:ACMeasurement ;
+                      rdfs:range xsd:dateTime ;
+                      rdfs:comment "Property. Model:'https://schema.org/DateTime'. Observation period: End date and time in an ISO8601 UTC format. The attribute can be used in addition to the `dateObserved` attribute when it corresponds to a time interval to be highlighted" .
+
+###  https://smartdatamodels.org/dataModel.Energy/phaseType
+energy:phaseType rdf:type owl:DatatypeProperty ;
+                 rdfs:subPropertyOf :Property ;
+                 rdfs:domain [ rdf:type owl:Class ;
+                               owl:unionOf ( energy:ACMeasurement
+                                             energy:InverterDevice
+                                           )
+                             ] ;
+                 rdfs:range xsd:string ;
+                 rdfs:comment "Property. Type of Phase. A unique value. Enum:'singlePhase,threePhase'" .
+
+###  https://smartdatamodels.org/dataModel.Energy/frequency
+energy:frequency rdf:type owl:DatatypeProperty ;
+                 rdfs:subPropertyOf :Property ;
+                 rdfs:domain [ rdf:type owl:Class ;
+                               owl:unionOf ( energy:ACMeasurement
+                                             energy:ThreePhaseAcMeasurement
+                                           )
+                             ] ;
+                 rdfs:range xsd:float ;
+                 rdfs:comment "Property. Model:'http://schema.org/Number'. Units:'Hertz (Hz)'. The frequency of the circuit" .
+
+###  https://smartdatamodels.org/dataModel.Energy/dateEnergyMeteringStarted
+energy:dateEnergyMeteringStarted rdf:type owl:DatatypeProperty ;
+                                 rdfs:subPropertyOf :Property ;
+                                 rdfs:domain [ rdf:type owl:Class ;
+                                               owl:unionOf ( energy:ACMeasurement
+                                                             energy:ThreePhaseAcMeasurement
+                                                           )
+                                             ] ;
+                                 rdfs:range xsd:dateTime ;
+                                 rdfs:comment "Property. Model:'http://schema.org/DateTime'. The starting date for metering energy" .
+
+###  https://smartdatamodels.org/dataModel.Energy/L1
+energy:L1 rdf:type owl:DatatypeProperty ;
+          rdfs:domain [ rdf:type owl:Class ;
+                        owl:unionOf ( default:activeEnergyImportType
+                                      default:reactiveEnergyImportType
+                                      default:apparentEnergyImportType
+                                      default:activeEnergyExportType
+                                      default:reactiveEnergyExportType
+                                      default:apparentEnergyExportType
+                                      default:activePowerType
+                                      default:reactivePowerType
+                                      default:apparentPowerType
+                                      default:powerFactorType
+                                      default:displacementPowerFactorType
+                                      default:currentType
+                                      default:phaseVoltageType
+                                      default:thdVoltageType
+                                      default:thdCurrentType
+                                    )
+                      ] ;
+          rdfs:range xsd:float ;
+          rdfs:comment "Property. Value for phase 1 of the thd current" .
+
+###  https://smartdatamodels.org/dataModel.Energy/L2
+energy:L2 rdf:type owl:DatatypeProperty ;
+          rdfs:domain [ rdf:type owl:Class ;
+                        owl:unionOf ( default:activeEnergyImportType
+                                      default:reactiveEnergyImportType
+                                      default:apparentEnergyImportType
+                                      default:activeEnergyExportType
+                                      default:reactiveEnergyExportType
+                                      default:apparentEnergyExportType
+                                      default:activePowerType
+                                      default:reactivePowerType
+                                      default:apparentPowerType
+                                      default:powerFactorType
+                                      default:displacementPowerFactorType
+                                      default:currentType
+                                      default:phaseVoltageType
+                                      default:thdVoltageType
+                                      default:thdCurrentType
+                                    )
+                      ] ;
+          rdfs:range xsd:float ;
+          rdfs:comment "Property. Value for phase 2 of the thd current" .
+
+###  https://smartdatamodels.org/dataModel.Energy/L3
+energy:L3 rdf:type owl:DatatypeProperty ;
+          rdfs:domain [ rdf:type owl:Class ;
+                        owl:unionOf ( default:activeEnergyImportType
+                                      default:reactiveEnergyImportType
+                                      default:apparentEnergyImportType
+                                      default:activeEnergyExportType
+                                      default:reactiveEnergyExportType
+                                      default:apparentEnergyExportType
+                                      default:activePowerType
+                                      default:reactivePowerType
+                                      default:apparentPowerType
+                                      default:powerFactorType
+                                      default:displacementPowerFactorType
+                                      default:currentType
+                                      default:phaseVoltageType
+                                      default:thdVoltageType
+                                      default:thdCurrentType
+                                    )
+                      ] ;
+          rdfs:range xsd:float ;
+          rdfs:comment "Property. Value for phase 3 of the thd current" .
+
+###  https://smartdatamodels.org/dataModel.Energy/totalActiveEnergyImport
+energy:totalActiveEnergyImport rdf:type owl:DatatypeProperty ;
+                               rdfs:subPropertyOf :Property ;
+                               rdfs:domain [ rdf:type owl:Class ;
+                                             owl:unionOf ( energy:ACMeasurement
+                                                           energy:ThreePhaseAcMeasurement
+                                                         )
+                                           ] ;
+                               rdfs:range xsd:float ;
+                               rdfs:comment "Property. Model:'https://schema.org/Number'. Units:'kilowatt hour (kWh)'. Total energy imported i.e. consumed since metering started (since `dateEnergyMeteringStarted`)" .
+
+###  https://smartdatamodels.org/dataModel.Energy/totalReactiveEnergyImport
+energy:totalReactiveEnergyImport rdf:type owl:DatatypeProperty ;
+                                 rdfs:subPropertyOf :Property ;
+                                 rdfs:domain [ rdf:type owl:Class ;
+                                               owl:unionOf ( energy:ACMeasurement
+                                                             energy:ThreePhaseAcMeasurement
+                                                           )
+                                             ] ;
+                                 rdfs:range xsd:float ;
+                                 rdfs:comment "Property. Model:'https://schema.org/Number'. Units:'kilovolt-ampere-reactive-hour (kVArh)'. Total energy imported i.e. consumed (with regards to fundamental frequency reactive power) since the metering start date (`dateEnergyMeteringStarted`)" .
+
+###  https://smartdatamodels.org/dataModel.Energy/totalApparentEnergyImport
+energy:totalApparentEnergyImport rdf:type owl:DatatypeProperty ;
+                                 rdfs:subPropertyOf :Property ;
+                                 rdfs:domain [ rdf:type owl:Class ;
+                                               owl:unionOf ( energy:ACMeasurement
+                                                             energy:ThreePhaseAcMeasurement
+                                                           )
+                                             ] ;
+                                 rdfs:range xsd:float ;
+                                 rdfs:comment "Property. Model:'https://schema.org/Number'. Units:'kilovolt-ampere-hour (kVAh)'. Total energy imported i.e. consumed (with regards to apparent power) since the metering start date (`dateEnergyMeteringStarted`)" .
+
+###  https://smartdatamodels.org/dataModel.Energy/totalActiveEnergyExport
+energy:totalActiveEnergyExport rdf:type owl:DatatypeProperty ;
+                               rdfs:subPropertyOf :Property ;
+                               rdfs:domain [ rdf:type owl:Class ;
+                                             owl:unionOf ( energy:ACMeasurement
+                                                           energy:ThreePhaseAcMeasurement
+                                                         )
+                                           ] ;
+                               rdfs:range xsd:float ;
+                               rdfs:comment "Property. Model:'https://schema.org/Number'. Units:'kilowatt hour (kWh)'. Total energy exported since metering started (since `dateEnergyMeteringStarted`)" .
+
+###  https://smartdatamodels.org/dataModel.Energy/totalReactiveEnergyExport
+energy:totalReactiveEnergyExport rdf:type owl:DatatypeProperty ;
+                                 rdfs:subPropertyOf :Property ;
+                                 rdfs:domain [ rdf:type owl:Class ;
+                                               owl:unionOf ( energy:ACMeasurement
+                                                             energy:ThreePhaseAcMeasurement
+                                                           )
+                                             ] ;
+                                 rdfs:range xsd:float ;
+                                 rdfs:comment "Property. Model:'https://schema.org/Number'. Units:'kilovolt-ampere-reactive-hour (kVArh)'. Total fundamental frequency reactive energy exported since metering started (since `dateEnergyMeteringStarted`)" .
+
+###  https://smartdatamodels.org/dataModel.Energy/totalApparentEnergyExport
+energy:totalApparentEnergyExport rdf:type owl:DatatypeProperty ;
+                                 rdfs:subPropertyOf :Property ;
+                                 rdfs:domain [ rdf:type owl:Class ;
+                                               owl:unionOf ( energy:ACMeasurement
+                                                             energy:ThreePhaseAcMeasurement
+                                                           )
+                                             ] ;
+                                 rdfs:range xsd:float ;
+                                 rdfs:comment "Property. Model:'https://schema.org/Number'. Units:'kilovolt-ampere-reactive-hour (kVArh)'. Total energy exported (with regards to apparent power) since the metering start date (`dateEnergyMeteringStarted`)" .
+
+###  https://smartdatamodels.org/dataModel.Energy/totalActivePower
+energy:totalActivePower rdf:type owl:DatatypeProperty ;
+                        rdfs:subPropertyOf :Property ;
+                        rdfs:domain [ rdf:type owl:Class ;
+                                      owl:unionOf ( energy:ACMeasurement
+                                                    energy:ThreePhaseAcMeasurement
+                                                  )
+                                    ] ;
+                        rdfs:range xsd:float ;
+                        rdfs:comment "Property. Model:'http://schema.org/Number'. Units:'watt (W)'. Active power consumed (counting all phases)" .
+
+###  https://smartdatamodels.org/dataModel.Energy/totalReactivePower
+energy:totalReactivePower rdf:type owl:DatatypeProperty ;
+                          rdfs:subPropertyOf :Property ;
+                          rdfs:domain [ rdf:type owl:Class ;
+                                        owl:unionOf ( energy:ACMeasurement
+                                                      energy:ThreePhaseAcMeasurement
+                                                    )
+                                      ] ;
+                          rdfs:range xsd:float ;
+                          rdfs:comment "Property. Model:'http://schema.org/Number'. Units:'volt-ampere-reactive (VAr)'. Reactive power consumed (counting all phases)" .
+
+###  https://smartdatamodels.org/dataModel.Energy/totalApparentPower
+energy:totalApparentPower rdf:type owl:DatatypeProperty ;
+                          rdfs:subPropertyOf :Property ;
+                          rdfs:domain [ rdf:type owl:Class ;
+                                        owl:unionOf ( energy:ACMeasurement
+                                                      energy:ThreePhaseAcMeasurement
+                                                    )
+                                      ] ;
+                          rdfs:range xsd:float ;
+                          rdfs:comment "Property. Model:'http://schema.org/Number'. Units:'volt-ampere (VA)'. Apparent power consumed (counting all phases)" .
+
+###  https://smartdatamodels.org/dataModel.Energy/totalPowerFactor
+energy:totalPowerFactor rdf:type owl:DatatypeProperty ;
+                        rdfs:subPropertyOf :Property ;
+                        rdfs:domain [ rdf:type owl:Class ;
+                                      owl:unionOf ( energy:ACMeasurement
+                                                    energy:ThreePhaseAcMeasurement
+                                                  )
+                                    ] ;
+                        rdfs:range xsd:float ;
+                        rdfs:comment "Property. Model:'http://schema.org/Number'. Units:'-1 to +1'. Power factor including all phases" .
+
+###  https://smartdatamodels.org/dataModel.Energy/totalDisplacementPowerFactor
+energy:totalDisplacementPowerFactor rdf:type owl:DatatypeProperty ;
+                                    rdfs:subPropertyOf :Property ;
+                                    rdfs:domain [ rdf:type owl:Class ;
+                                                  owl:unionOf ( energy:ACMeasurement
+                                                                energy:ThreePhaseAcMeasurement
+                                                              )
+                                                ] ;
+                                    rdfs:range xsd:float ;
+                                    rdfs:comment "Property. Model:'http://schema.org/Number'. Units:'-1 to +1'. Displacement power factor including all phases. The quantity is based on the fundamental frequency of the system" .
+
+###  https://smartdatamodels.org/dataModel.Energy/N
+energy:N rdf:type owl:DatatypeProperty ;
+         rdfs:domain default:currentType ;
+         rdfs:range xsd:float ;
+         rdfs:comment "Property. Value for phase neutral of the current" .
+
+###  https://smartdatamodels.org/dataModel.Energy/L12
+energy:L12 rdf:type owl:DatatypeProperty ;
+           rdfs:domain default:phaseToPhaseVoltageType ;
+           rdfs:range xsd:float ;
+           rdfs:comment "Property. Value for phase 1 to phase 2 voltage" .
+
+###  https://smartdatamodels.org/dataModel.Energy/L23
+energy:L23 rdf:type owl:DatatypeProperty ;
+           rdfs:domain default:phaseToPhaseVoltageType ;
+           rdfs:range xsd:float ;
+           rdfs:comment "Property. Value for phase 2 to phase 3 voltage" .
+
+###  https://smartdatamodels.org/dataModel.Energy/L31
+energy:L31 rdf:type owl:DatatypeProperty ;
+           rdfs:domain default:phaseToPhaseVoltageType ;
+           rdfs:range xsd:float ;
+           rdfs:comment "Property. Value for phase 3 to phase 1 voltage" .
+
+###  https://smartdatamodels.org/dataModel.Energy/dateLastReported
+energy:dateLastReported rdf:type owl:DatatypeProperty ;
+                        rdfs:subPropertyOf :Property ;
+                        rdfs:domain [ rdf:type owl:Class ;
+                                      owl:unionOf ( energy:InverterDevice
+                                                    energy:TechnicalCabinetDevice
+                                                  )
+                                    ] ;
+                        rdfs:range xsd:dateTime ;
+                        rdfs:comment "Property. A timestamp which denotes the last time when the device successfully reported data. Date and time in an ISO8601 UTCformat. Model:'https://schema.org/DateTime'" .
+
+###  https://smartdatamodels.org/dataModel.Energy/brandName
+energy:brandName rdf:type owl:DatatypeProperty ;
+                 rdfs:subPropertyOf :Property ;
+                 rdfs:domain [ rdf:type owl:Class ;
+                               owl:unionOf ( energy:InverterDevice
+                                             energy:TechnicalCabinetDevice
+                                           )
+                             ] ;
+                 rdfs:range xsd:string ;
+                 rdfs:comment "Property. Name of the brand. Model:'https://schema.org/brand'" .
+
+###  https://smartdatamodels.org/dataModel.Energy/modelName
+energy:modelName rdf:type owl:DatatypeProperty ;
+                 rdfs:subPropertyOf :Property ;
+                 rdfs:domain [ rdf:type owl:Class ;
+                               owl:unionOf ( energy:InverterDevice
+                                             energy:TechnicalCabinetDevice
+                                           )
+                             ] ;
+                 rdfs:range xsd:string ;
+                 rdfs:comment "Property. Name of the model as given by the manufacturer" .
+
+###  https://smartdatamodels.org/dataModel.Energy/manufacturerName
+energy:manufacturerName rdf:type owl:DatatypeProperty ;
+                        rdfs:subPropertyOf :Property ;
+                        rdfs:domain [ rdf:type owl:Class ;
+                                      owl:unionOf ( energy:InverterDevice
+                                                    energy:TechnicalCabinetDevice
+                                                  )
+                                    ] ;
+                        rdfs:range xsd:string ;
+                        rdfs:comment "Property. Name of the manufacturer. Model:'https://schema.org/manufacturer'" .
+
+###  https://smartdatamodels.org/dataModel.Energy/serialNumber
+energy:serialNumber rdf:type owl:DatatypeProperty ;
+                    rdfs:subPropertyOf :Property ;
+                    rdfs:domain [ rdf:type owl:Class ;
+                                  owl:unionOf ( energy:InverterDevice
+                                                energy:TechnicalCabinetDevice
+                                              )
+                                ] ;
+                    rdfs:range xsd:string ;
+                    rdfs:comment "Property. Serial number of the container. Model:'https://schema.org/serialNumber'" .
+
+###  https://smartdatamodels.org/dataModel.Energy/application
+energy:application rdf:type owl:DatatypeProperty ;
+                   rdfs:subPropertyOf :Property ;
+                   rdfs:domain [ rdf:type owl:Class ;
+                                 owl:unionOf ( energy:InverterDevice
+                                               energy:TechnicalCabinetDevice
+                                             )
+                               ] ;
+                   rdfs:range rdf:List ;
+                   rdfs:comment "Property. Target application of the Device regarding the environment. A combination of these values. Enum:'commercial, distributionService, industrial, other, publicWorks, road, tertiary, urbanService' -- item_type:xsd:string, item_enum:['commercial', 'distributionService', 'industrial', 'other', 'publicWorks', 'road', 'tertiary', 'urbanService']." .
+
+###  https://smartdatamodels.org/dataModel.Energy/typeOfUse
+energy:typeOfUse rdf:type owl:DatatypeProperty ;
+                 rdfs:subPropertyOf :Property ;
+                 rdfs:domain [ rdf:type owl:Class ;
+                               owl:unionOf ( energy:InverterDevice
+                                             energy:TechnicalCabinetDevice
+                                           )
+                             ] ;
+                 rdfs:range xsd:string ;
+                 rdfs:comment "Property. Accepted use regarding its positioning in an indoor / outdoor environment. A unique value of these values. Enum:'indoor, mixed, outdoor, other'" .
+
+###  https://smartdatamodels.org/dataModel.Energy/installationMode
+energy:installationMode rdf:type owl:DatatypeProperty ;
+                        rdfs:subPropertyOf :Property ;
+                        rdfs:domain [ rdf:type owl:Class ;
+                                      owl:unionOf ( energy:InverterDevice
+                                                    energy:TechnicalCabinetDevice
+                                                  )
+                                    ] ;
+                        rdfs:range xsd:string ;
+                        rdfs:comment "Property. Positioning of the device in relation to a ground reference system. Model:'https://schema.org/Text'. Enum:'aerial, ground, other, pole, roofing, underground, wall'" .
+
+###  https://smartdatamodels.org/dataModel.Energy/installationCondition
+energy:installationCondition rdf:type owl:DatatypeProperty ;
+                             rdfs:subPropertyOf :Property ;
+                             rdfs:domain [ rdf:type owl:Class ;
+                                           owl:unionOf ( energy:InverterDevice
+                                                         energy:TechnicalCabinetDevice
+                                                       )
+                                         ] ;
+                             rdfs:range rdf:List ;
+                             rdfs:comment "Property. Condition and possibility of use in the following environments. A combination of these values. Enum:'desert, dust, extremeCold, extremeClimate, extremeHeat, extremeHumidity, marine, none, other, saline, seismic, sand' -- item_type:xsd:string, item_enum:['desert', 'dust', 'extremeCold', 'extremeClimate', 'extremeHeat', 'extremeHumidity', 'marine', 'none', 'other', 'saline', 'seismic', 'sand']." .
+
+###  https://smartdatamodels.org/dataModel.Energy/possibilityOfUse
+energy:possibilityOfUse rdf:type owl:DatatypeProperty ;
+                        rdfs:subPropertyOf :Property ;
+                        rdfs:domain [ rdf:type owl:Class ;
+                                      owl:unionOf ( energy:InverterDevice
+                                                    energy:TechnicalCabinetDevice
+                                                  )
+                                    ] ;
+                        rdfs:range xsd:string ;
+                        rdfs:comment "Property. Possibility of use. A unique value. Enum:'mixed, mobile, other, stationary'" .
+
+###  https://smartdatamodels.org/dataModel.Energy/documentation
+energy:documentation rdf:type owl:DatatypeProperty ;
+                     rdfs:subPropertyOf :Property ;
+                     rdfs:domain [ rdf:type owl:Class ;
+                                   owl:unionOf ( energy:InverterDevice
+                                                 energy:TechnicalCabinetDevice
+                                               )
+                                 ] ;
+                     rdfs:range xsd:string ;
+                     rdfs:comment "Property. A link to device's documentation. Model:'https://schema.org/URL'" .
+
+###  https://smartdatamodels.org/dataModel.Energy/supplyPhaseNb
+energy:supplyPhaseNb rdf:type owl:DatatypeProperty ;
+                     rdfs:subPropertyOf :Property ;
+                     rdfs:domain energy:InverterDevice ;
+                     rdfs:range xsd:float ;
+                     rdfs:comment "Property. Number of power supply phases. Model:'https://schema.org/Number'" .
+
+###  https://smartdatamodels.org/dataModel.Energy/length
+energy:length rdf:type owl:DatatypeProperty ;
+              rdfs:domain default:dimensionType ;
+              rdfs:range xsd:float .
+
+###  https://smartdatamodels.org/dataModel.Energy/height
+energy:height rdf:type owl:DatatypeProperty ;
+              rdfs:domain [ rdf:type owl:Class ;
+                            owl:unionOf ( default:dimensionType
+                                          default:internalDimensionType
+                                        )
+                          ] ;
+              rdfs:range xsd:float .
+
+###  https://smartdatamodels.org/dataModel.Energy/depth
+energy:depth rdf:type owl:DatatypeProperty ;
+             rdfs:domain [ rdf:type owl:Class ;
+                           owl:unionOf ( default:dimensionType
+                                         default:internalDimensionType
+                                       )
+                         ] ;
+             rdfs:range xsd:float .
+
+###  https://smartdatamodels.org/dataModel.Energy/weight
+energy:weight rdf:type owl:DatatypeProperty ;
+              rdfs:subPropertyOf :Property ;
+              rdfs:domain [ rdf:type owl:Class ;
+                            owl:unionOf ( energy:InverterDevice
+                                          energy:TechnicalCabinetDevice
+                                        )
+                          ] ;
+              rdfs:range xsd:float ;
+              rdfs:comment "Property. Weight of the item. The unit code (text) of measurement  is given using the [UN/CEFACT Common Codes](http://wiki.goodrelations-vocabulary.org/Documentation/UN/CEFACT_Common_Codes). For instance, **KGM** represents Kilograms. Model:'https://schema.org/weigth'" .
+
+###  https://smartdatamodels.org/dataModel.Energy/protectionIP
+energy:protectionIP rdf:type owl:DatatypeProperty ;
+                    rdfs:subPropertyOf :Property ;
+                    rdfs:domain [ rdf:type owl:Class ;
+                                  owl:unionOf ( energy:InverterDevice
+                                                energy:TechnicalCabinetDevice
+                                              )
+                                ] ;
+                    rdfs:range xsd:string ;
+                    rdfs:comment "Property. IP 'Ingress Protection' for the Junction Box. This is the level classifies and rates the degree of protection provided by mechanical casings and electrical enclosures against intrusion, dust, accidental contact, and water according to International Electrotechnical Commission standard (EN 60-529). First digit: Solid particle protection (Single numeral: 06 or 'X'). Second digit: Liquid ingress protection (Single numeral: 09 or 'X' ).Third digit: Personal Protection against access to dangerous parts (optional additional letter). Fourth digit: Other protections (optional additional letter)" .
+
+###  https://smartdatamodels.org/dataModel.Energy/protectionIK
+energy:protectionIK rdf:type owl:DatatypeProperty ;
+                    rdfs:subPropertyOf :Property ;
+                    rdfs:domain [ rdf:type owl:Class ;
+                                  owl:unionOf ( energy:InverterDevice
+                                                energy:TechnicalCabinetDevice
+                                              )
+                                ] ;
+                    rdfs:range xsd:float ;
+                    rdfs:comment "Property. IK '*Mecanic Protection*' level relating to numeric classification for the degrees of protection provided by enclosures for electrical equipment against external mechanical impacts, according to International Electro technical Commission standard (EN 62-262). - IK varies from 0 (minimum resistance) to 10 (maximum resistance) which represents an Impact Energy (Unit Joule)" .
+
+###  https://smartdatamodels.org/dataModel.Energy/protectionClassSLK
+energy:protectionClassSLK rdf:type owl:DatatypeProperty ;
+                          rdfs:subPropertyOf :Property ;
+                          rdfs:domain energy:InverterDevice ;
+                          rdfs:range xsd:string ;
+                          rdfs:comment "Property. Protection class (SKL). - 0 : main insulation without earth connection. - 1 : main insulation and additional insulation (earth terminal). - 2 : double or reinforced insulation (equivalent to twice the main insulation) without accessible metal part. - 3 : operating in very low safety voltage (SELV) (50V maximum)" .
+
+###  https://smartdatamodels.org/dataModel.Energy/overVoltageCategory
+energy:overVoltageCategory rdf:type owl:DatatypeProperty ;
+                           rdfs:subPropertyOf :Property ;
+                           rdfs:domain energy:InverterDevice ;
+                           rdfs:range xsd:string ;
+                           rdfs:comment "Property. Over voltage category. - I : connection to circuits with transient over voltages at an appropriate low level. - II : main insulation and additional insulation (earth terminal). - III : fixed installations with reliability and availability making subject to specific specifications. - IV : materials at the origin of the electrical installation such as electric meters and main materials over current protection" .
+
+###  ngsi-ld:min
+ngsi-ld:min rdf:type owl:DatatypeProperty ;
+            rdfs:domain [ rdf:type owl:Class ;
+                          owl:unionOf ( default:operatingTemperatureType
+                                        default:operatingAirHumidityType
+                                        default:operatingVoltageDCType
+                                        default:operatingAmpereDCType
+                                        default:operatingFrequencyDCType
+                                        default:mPPTPVVoltageDCType
+                                        default:operatingVoltageACType
+                                        default:operatingAmpereACType
+                                        default:operatingFrequencyACType
+                                      )
+                        ] ;
+            rdfs:range xsd:float .
+
+###  ngsi-ld:max
+ngsi-ld:max rdf:type owl:DatatypeProperty ;
+            rdfs:domain [ rdf:type owl:Class ;
+                          owl:unionOf ( default:operatingTemperatureType
+                                        default:operatingAirHumidityType
+                                        default:operatingVoltageDCType
+                                        default:operatingAmpereDCType
+                                        default:operatingFrequencyDCType
+                                        default:mPPTPVVoltageDCType
+                                        default:operatingVoltageACType
+                                        default:operatingAmpereACType
+                                        default:operatingFrequencyACType
+                                      )
+                        ] ;
+            rdfs:range xsd:float .
+
+###  https://smartdatamodels.org/dataModel.Energy/nominalPowerDC
+energy:nominalPowerDC rdf:type owl:DatatypeProperty ;
+                      rdfs:subPropertyOf :Property ;
+                      rdfs:domain energy:InverterDevice ;
+                      rdfs:range xsd:float ;
+                      rdfs:comment "Property. Nominal Power or Maximum Power factor for cos phi=1. The unit code (text) is given using the [UN/CEFACT Common Codes](http://wiki.goodrelations-vocabulary.org/Documentation/UN/CEFACT_Common_Codes). For instance, **WTT** represents Watt. Model:'https://schema.org/Number'. Units:'Watt'" .
+
+###  https://smartdatamodels.org/dataModel.Energy/nominalVoltageDC
+energy:nominalVoltageDC rdf:type owl:DatatypeProperty ;
+                        rdfs:subPropertyOf :Property ;
+                        rdfs:domain energy:InverterDevice ;
+                        rdfs:range xsd:float ;
+                        rdfs:comment "Property. Nominal voltage. The unit code (text) is given using the [UN/CEFACT Common Codes](http://wiki.goodrelations-vocabulary.org/Documentation/UN/CEFACT_Common_Codes). For instance, **VLT** represents Volt. Model:'https://schema.org/Number'. Units:'Volt'" .
+
+###  https://smartdatamodels.org/dataModel.Energy/nominalAmpereDC
+energy:nominalAmpereDC rdf:type owl:DatatypeProperty ;
+                       rdfs:subPropertyOf :Property ;
+                       rdfs:domain energy:InverterDevice ;
+                       rdfs:range xsd:float ;
+                       rdfs:comment "Property. Nominal Amperage. The unit code (text) is given using the [UN/CEFACT Common Codes](http://wiki.goodrelations-vocabulary.org/Documentation/UN/CEFACT_Common_Codes). For instance, **AMP** represents Ampere. Model:'https://schema.org/Number'. Units:'Ampere'" .
+
+###  https://smartdatamodels.org/dataModel.Energy/nominalFrequencyDC
+energy:nominalFrequencyDC rdf:type owl:DatatypeProperty ;
+                          rdfs:subPropertyOf :Property ;
+                          rdfs:domain energy:InverterDevice ;
+                          rdfs:range xsd:float ;
+                          rdfs:comment "Property.  Nominal Frequency. The unit code (text) is given using the [UN/CEFACT Common Codes](http://wiki.goodrelations-vocabulary.org/Documentation/UN/CEFACT_Common_Codes). For instance, **HTZ** represents Hertz. Model:'https://schema.org/Number'. Units:'Hertz'" .
+
+###  https://smartdatamodels.org/dataModel.Energy/startingVoltageDC
+energy:startingVoltageDC rdf:type owl:DatatypeProperty ;
+                         rdfs:subPropertyOf :Property ;
+                         rdfs:domain energy:InverterDevice ;
+                         rdfs:range xsd:float ;
+                         rdfs:comment "Property. Starting voltage. The unit code (text) is given using the [UN/CEFACT Common Codes](http://wiki.goodrelations-vocabulary.org/Documentation/UN/CEFACT_Common_Codes). For instance, **VLT** represents Volt. Model:'https://schema.org/Number'. Units:'Volt'" .
+
+###  https://smartdatamodels.org/dataModel.Energy/nbMPPTrackersDC
+energy:nbMPPTrackersDC rdf:type owl:DatatypeProperty ;
+                       rdfs:subPropertyOf :Property ;
+                       rdfs:domain energy:InverterDevice ;
+                       rdfs:range xsd:float ;
+                       rdfs:comment "Property. Number of MPP trackers. Model:'https://schema.org/Number'" .
+
+###  https://smartdatamodels.org/dataModel.Energy/nbInputParallelDC
+energy:nbInputParallelDC rdf:type owl:DatatypeProperty ;
+                         rdfs:subPropertyOf :Property ;
+                         rdfs:domain energy:InverterDevice ;
+                         rdfs:range xsd:string ;
+                         rdfs:comment "Property. Maximum Number of inputs (in parallel). Model:'https://schema.org/Number'" .
+
+###  https://smartdatamodels.org/dataModel.Energy/maxInputCurrentParallelAssembly
+energy:maxInputCurrentParallelAssembly rdf:type owl:DatatypeProperty ;
+                                       rdfs:subPropertyOf :Property ;
+                                       rdfs:domain energy:InverterDevice ;
+                                       rdfs:range xsd:float ;
+                                       rdfs:comment "Property. Max. Current Input with an Parallel Assembly. The unit code (text) is given using the [UN/CEFACT Common Codes](http://wiki.goodrelations-vocabulary.org/Documentation/UN/CEFACT_Common_Codes). For instance, **AMP** represents Ampere. Model:'https://schema.org/Number'. Units:'Ampere'" .
+
+###  https://smartdatamodels.org/dataModel.Energy/nominalPowerAC
+energy:nominalPowerAC rdf:type owl:DatatypeProperty ;
+                      rdfs:subPropertyOf :Property ;
+                      rdfs:domain energy:InverterDevice ;
+                      rdfs:range xsd:float ;
+                      rdfs:comment "Property. Nominal Power . The unit code (text) is given using the [UN/CEFACT Common Codes](http://wiki.goodrelations-vocabulary.org/Documentation/UN/CEFACT_Common_Codes). For instance, **WTT** represents Watt. Model:'https://schema.org/Number'. Units:'Watt'" .
+
+###  https://smartdatamodels.org/dataModel.Energy/maxOutputPowerAC
+energy:maxOutputPowerAC rdf:type owl:DatatypeProperty ;
+                        rdfs:subPropertyOf :Property ;
+                        rdfs:domain energy:InverterDevice ;
+                        rdfs:range xsd:float ;
+                        rdfs:comment "Property. Maximum Power or Apparent Power. The unit code (text) is given using the [UN/CEFACT Common Codes](http://wiki.goodrelations-vocabulary.org/Documentation/UN/CEFACT_Common_Codes). For instance, **D46** represents Volt Ampere. Model:'https://schema.org/Number'. Units:'Volt Ampere'" .
+
+###  https://smartdatamodels.org/dataModel.Energy/nominalVoltageAC
+energy:nominalVoltageAC rdf:type owl:DatatypeProperty ;
+                        rdfs:subPropertyOf :Property ;
+                        rdfs:domain energy:InverterDevice ;
+                        rdfs:range xsd:float ;
+                        rdfs:comment "Property. Nominal battery voltage *(Code U)*. The unit code (text) is given using the [UN/CEFACT Common Codes](http://wiki.goodrelations-vocabulary.org/Documentation/UN/CEFACT_Common_Codes). For instance, **VLT** represents Volt. Model:'https://schema.org/Number'. Units:'Volt'" .
+
+###  https://smartdatamodels.org/dataModel.Energy/nominalAmpereAC
+energy:nominalAmpereAC rdf:type owl:DatatypeProperty ;
+                       rdfs:subPropertyOf :Property ;
+                       rdfs:domain energy:InverterDevice ;
+                       rdfs:range xsd:float ;
+                       rdfs:comment "Property. Nominal Amperage *(Code I)*. The unit code (text) is given using the [UN/CEFACT Common Codes](http://wiki.goodrelations-vocabulary.org/Documentation/UN/CEFACT_Common_Codes). For instance, **AMP** represents Ampere. Model:'https://schema.org/Number'. Units:'Ampere'" .
+
+###  https://smartdatamodels.org/dataModel.Energy/nominalFrequencyAC
+energy:nominalFrequencyAC rdf:type owl:DatatypeProperty ;
+                          rdfs:subPropertyOf :Property ;
+                          rdfs:domain energy:InverterDevice ;
+                          rdfs:range xsd:float ;
+                          rdfs:comment "Property. Nominal Frequency. The unit code (text) is given using the [UN/CEFACT Common Codes](http://wiki.goodrelations-vocabulary.org/Documentation/UN/CEFACT_Common_Codes). For instance, **HTZ** represents Hertz. Model:'https://schema.org/Number'. Units:'Hertz'" .
+
+###  https://smartdatamodels.org/dataModel.Energy/powerFactorAC
+energy:powerFactorAC rdf:type owl:DatatypeProperty ;
+                     rdfs:subPropertyOf :Property ;
+                     rdfs:domain energy:InverterDevice ;
+                     rdfs:range xsd:float ;
+                     rdfs:comment "Property. Power factor for cos phi. A value between [0,1] Units:'Volt'. Model:'http://schema.org/Number'" .
+
+###  https://smartdatamodels.org/dataModel.Energy/euro
+energy:euro rdf:type owl:DatatypeProperty ;
+            rdfs:domain default:moduleYieldRateType ;
+            rdfs:range xsd:float .
+
+###  https://smartdatamodels.org/dataModel.Energy/eta
+energy:eta rdf:type owl:DatatypeProperty ;
+           rdfs:domain default:moduleYieldRateType ;
+           rdfs:range xsd:float .
+
+###  https://smartdatamodels.org/dataModel.Energy/noiseLevel
+energy:noiseLevel rdf:type owl:DatatypeProperty ;
+                  rdfs:subPropertyOf :Property ;
+                  rdfs:domain energy:InverterDevice ;
+                  rdfs:range xsd:float ;
+                  rdfs:comment "Property. Sound Power level of the Device. The unit code (text) is given using the [UN/CEFACT Common Codes](http://wiki.goodrelations-vocabulary.org/Documentation/UN/CEFACT_Common_Codes). For instance, **2N** represents Decibel. Units:'dB'. Model:'http://schema.org/Number'" .
+
+###  https://smartdatamodels.org/dataModel.Energy/self-consumption
+energy:self-consumption rdf:type owl:DatatypeProperty ;
+                        rdfs:subPropertyOf :Property ;
+                        rdfs:domain energy:InverterDevice ;
+                        rdfs:range xsd:float ;
+                        rdfs:comment "Property. Self-consumption during nigth. The unit code (text) is given using the [UN/CEFACT Common Codes](http://wiki.goodrelations-vocabulary.org/Documentation/UN/CEFACT_Common_Codes).  For instance, **WTT** represents Watt. Units:'Watt'. Model:'http://schema.org/Number'" .
+
+###  https://smartdatamodels.org/dataModel.Energy/topology
+energy:topology rdf:type owl:DatatypeProperty ;
+                rdfs:subPropertyOf :Property ;
+                rdfs:domain energy:InverterDevice ;
+                rdfs:range xsd:string ;
+                rdfs:comment "Property. Description of the topology of the installation" .
+
+###  https://smartdatamodels.org/dataModel.Energy/coolingSystem
+energy:coolingSystem rdf:type owl:DatatypeProperty ;
+                     rdfs:subPropertyOf :Property ;
+                     rdfs:domain energy:InverterDevice ;
+                     rdfs:range xsd:string ;
+                     rdfs:comment "Property.  Cooling System of the Device. Enum:'Convection, OptiCool, Regulated-fan, Other'" .
+
+###  https://smartdatamodels.org/dataModel.Energy/inverterStatus
+energy:inverterStatus rdf:type owl:DatatypeProperty ;
+                      rdfs:subPropertyOf :Property ;
+                      rdfs:domain energy:InverterDevice ;
+                      rdfs:range rdf:List ;
+                      rdfs:comment "Property. Status of the inverter. A combination of values -- item_type:xsd:string, item_enum:['00-OnSector', '01-PowerFailure/OnBattery', '02-LossCommunication', '03-BatteryFault', '04-SystemShutDown', '05-TensionDip', '06-OverVoltage', '07-VoltageDrop', '08-VoltageIncrease', '09-LineNoise', '10-FrequencyVariation', '11-TransientDistortion', '12-HarmonicDistortion']." .
+
+###  https://smartdatamodels.org/dataModel.Energy/width
+energy:width rdf:type owl:DatatypeProperty ;
+             rdfs:domain default:internalDimensionType ;
+             rdfs:range xsd:float .
+
+###  https://smartdatamodels.org/dataModel.Energy/maximumSystemVoltage
+energy:maximumSystemVoltage rdf:type owl:DatatypeProperty ;
+                            rdfs:subPropertyOf :Property ;
+                            rdfs:domain energy:TechnicalCabinetDevice ;
+                            rdfs:range xsd:float ;
+                            rdfs:comment "Property. Maximum system voltage permitted for the **module**. The unit code (text) is given using the [UN/CEFACT Common Codes](http://wiki.goodrelations-vocabulary.org/Documentation/UN/CEFACT_Common_Codes). For instance, **VLT** represents Volt" .
+
+###  https://smartdatamodels.org/dataModel.Energy/protectionOthers
+energy:protectionOthers rdf:type owl:DatatypeProperty ;
+                        rdfs:subPropertyOf :Property ;
+                        rdfs:domain energy:TechnicalCabinetDevice ;
+                        rdfs:range rdf:List ;
+                        rdfs:comment "Property. Others protection of the technical cabinet. A combination of these values. Enum:'abrasion, basement, dampProof, display, doorTearing, dust, forcedOpening, graffiti, insect, other, roofOverload, saltSpray, shielding, solar, vandalism, water' -- item_type:xsd:string, item_enum:['abrasion', 'basement', 'dampProof', 'display', 'doorTearing', 'dust', 'forcedOpening', 'graffiti', 'insect', 'other', 'roofOverload', 'saltSpray', 'shielding', 'solar', 'vandalism', 'water']." .
+
+###  https://smartdatamodels.org/dataModel.Energy/doorCount
+energy:doorCount rdf:type owl:DatatypeProperty ;
+                 rdfs:subPropertyOf :Property ;
+                 rdfs:domain energy:TechnicalCabinetDevice ;
+                 rdfs:range xsd:float ;
+                 rdfs:comment "Property. Count of doors of the technical Cabinet" .
+
+###  https://smartdatamodels.org/dataModel.Energy/doorType
+energy:doorType rdf:type owl:DatatypeProperty ;
+                rdfs:subPropertyOf :Property ;
+                rdfs:domain energy:TechnicalCabinetDevice ;
+                rdfs:range xsd:string ;
+                rdfs:comment "Property. Type of door of the technical Cabinet. A unique value of these values. Enum:'mixed, other, solid, transparent'" .
+
+###  https://smartdatamodels.org/dataModel.Energy/doorOpeningAngle
+energy:doorOpeningAngle rdf:type owl:DatatypeProperty ;
+                        rdfs:subPropertyOf :Property ;
+                        rdfs:domain energy:TechnicalCabinetDevice ;
+                        rdfs:range xsd:float ;
+                        rdfs:comment "Property. Door opening angle expressed in decimal degrees with a range from 0 to 180 degree. The unit code (text) of measurement  is given using the [UN/CEFACT Common Codes](http://wiki.goodrelations-vocabulary.org/Documentation/UN/CEFACT_Common_Codes). For instance, **DD** represents Decimal Degrees" .
+
+###  https://smartdatamodels.org/dataModel.Energy/doorClosingMode
+energy:doorClosingMode rdf:type owl:DatatypeProperty ;
+                       rdfs:subPropertyOf :Property ;
+                       rdfs:domain energy:TechnicalCabinetDevice ;
+                       rdfs:range rdf:List ;
+                       rdfs:comment "Property. Door closing mode. A unique value of these values. Enum:'fixedHandle, other, revolvingHandle, triangleHandle' -- item_type:xsd:string, item_enum:['fixedHandle', 'other', 'revolvingHandle', 'triangleHandle']." .
+
+###  https://smartdatamodels.org/dataModel.Energy/designMaterials
+energy:designMaterials rdf:type owl:DatatypeProperty ;
+                       rdfs:subPropertyOf :Property ;
+                       rdfs:domain energy:TechnicalCabinetDevice ;
+                       rdfs:range rdf:List ;
+                       rdfs:comment "Property. Design materials to build the cabinet. A combination of  these values. Enum:'ABS-Plastic, aluminum, fiberGlass, galvanizedSteel, other, polyester, stainlessSteel' -- item_type:xsd:string, item_enum:['ABS-Plastic', 'aluminum', 'fiberGlass', 'galvanizedSteel', 'other', 'polyester', 'stainlessSteel']." .
+
+###  https://smartdatamodels.org/dataModel.Energy/interiorCoating
+energy:interiorCoating rdf:type owl:DatatypeProperty ;
+                       rdfs:subPropertyOf :Property ;
+                       rdfs:domain energy:TechnicalCabinetDevice ;
+                       rdfs:range rdf:List ;
+                       rdfs:comment "Property. Interior Coating. A combination of these values. Enum:'fiberGlass, heatInsulating, other, plastic, polyester, polyesterResin, steel' -- item_type:xsd:string, item_enum:['fiberGlass', 'heatInsulating', 'other', 'plastic', 'polyester', 'polyesterResin', 'steel']." .
+
+###  https://smartdatamodels.org/dataModel.Energy/exteriorCoating
+energy:exteriorCoating rdf:type owl:DatatypeProperty ;
+                       rdfs:subPropertyOf :Property ;
+                       rdfs:domain energy:TechnicalCabinetDevice ;
+                       rdfs:range rdf:List ;
+                       rdfs:comment "Property. Interior Coating. A combination of these values. Enum:'fiberGlass, other, plastic, polyester, polyesterResin, steel -- item_type:xsd:string, item_enum:['fiberGlass', 'other', 'plastic', 'polyester', 'polyesterResin', 'steel']." .
+
+###  https://smartdatamodels.org/dataModel.Energy/exteriorFinish
+energy:exteriorFinish rdf:type owl:DatatypeProperty ;
+                      rdfs:subPropertyOf :Property ;
+                      rdfs:domain energy:TechnicalCabinetDevice ;
+                      rdfs:range rdf:List ;
+                      rdfs:comment "Property. Exterior finish. A combination of these values. Enum:'graffiti, other, raised, roughcast, smooth, textured' -- item_type:xsd:string, item_enum:['graffiti', 'other', 'raised', 'roughcast', 'smooth', 'textured']." .
+
+###  https://smartdatamodels.org/dataModel.Energy/ventilationMode
+energy:ventilationMode rdf:type owl:DatatypeProperty ;
+                       rdfs:subPropertyOf :Property ;
+                       rdfs:domain energy:TechnicalCabinetDevice ;
+                       rdfs:range rdf:List ;
+                       rdfs:comment "Property. Ventilation mode. A combination of these values. Enum:'airConditioners, dehumidifier, none, other, selfVentilatedGills' -- item_type:xsd:string, item_enum:['airConditioners', 'dehumidifier', 'none', 'other', 'selfVentilatedGills']." .
+
